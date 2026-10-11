@@ -42,26 +42,36 @@ from auth.users
 where raw_user_meta_data ->> 'username' is not null
 on conflict do nothing;
 
--- Lets the login page sign in with a username: returns that user's email.
--- Also used by signup to check whether a username is taken.
-create or replace function public.get_email_by_username(p_username text)
+-- Replaced by find_account_email below
+drop function if exists public.get_email_by_username(text);
+
+-- Returns the account's email for an email or username, or null if none matches.
+-- Used by login (username -> email), signup (is the username taken?) and
+-- forgot password (does the account exist?).
+create or replace function public.find_account_email(p_identifier text)
 returns text
 language sql
 security definer set search_path = ''
 as $$
   select u.email
-  from public.profiles p
-  join auth.users u on u.id = p.id
-  where lower(p.username) = lower(p_username)
+  from auth.users u
+  left join public.profiles p on p.id = u.id
+  where lower(u.email) = lower(p_identifier)
+     or lower(p.username) = lower(p_identifier)
   limit 1;
 $$;
 
-grant execute on function public.get_email_by_username(text) to anon, authenticated;
+grant execute on function public.find_account_email(text) to anon, authenticated;
 
--- Forgot password without email: sets a new password for the account matching
--- the given email or username. No ownership check (school project only).
--- Returns false if no account matches.
-create or replace function public.reset_password(p_identifier text, p_new_password text)
+-- Forgot password without email: the OTP is hardcoded to 3040 for the demo
+-- (no OTP is sent). Returns false if no account matches the email/username.
+drop function if exists public.reset_password(text, text);
+drop function if exists public.reset_password(text, text, text, text);
+create or replace function public.reset_password(
+  p_identifier text,
+  p_otp text,
+  p_new_password text
+)
 returns boolean
 language plpgsql
 security definer set search_path = ''
@@ -69,6 +79,10 @@ as $$
 declare
   v_user_id uuid;
 begin
+  if p_otp <> '3040' then
+    raise exception 'Invalid OTP';
+  end if;
+
   if length(p_new_password) < 6 then
     raise exception 'Password must be at least 6 characters';
   end if;
@@ -93,4 +107,4 @@ begin
 end;
 $$;
 
-grant execute on function public.reset_password(text, text) to anon, authenticated;
+grant execute on function public.reset_password(text, text, text) to anon, authenticated;

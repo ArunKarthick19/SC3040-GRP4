@@ -20,4 +20,4 @@ python main.py OR uvicorn main:app --reload?            # http://localhost:8000/
 
 ## Supabase setup (auth)
 `supabase/auth_setup.sql` creates a `profiles` table for usernames plus functions for username login and email-free password reset. Run it once in **Supabase → SQL Editor**.
-    I type username -> run the get_email_by_username query through the api -> returns email -> logins email+password 
+    I type username -> run the find_account_email query through the api -> returns email -> logins email+password 

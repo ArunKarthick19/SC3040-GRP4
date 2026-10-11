@@ -18,7 +18,7 @@ export default function Login() {
 
     // Supabase auth only signs in by email, so look up the email for a username
     if (!email.includes('@')) {
-      const { data, error } = await supabase.rpc('get_email_by_username', { p_username: email });
+      const { data, error } = await supabase.rpc('find_account_email', { p_identifier: email });
       if (error) {
         setError(error.message);
         setLoading(false);

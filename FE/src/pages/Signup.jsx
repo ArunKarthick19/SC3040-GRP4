@@ -29,7 +29,7 @@ export default function Signup() {
 
     setLoading(true);
 
-    const { data: existing } = await supabase.rpc('get_email_by_username', { p_username: trimmedUsername });
+    const { data: existing } = await supabase.rpc('find_account_email', { p_identifier: trimmedUsername });
     if (existing) {
       setError('Username is already taken');
       setLoading(false);
