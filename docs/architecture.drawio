@@ -1,0 +1,129 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="flatly-arch" name="Flatly Architecture">
+    <mxGraphModel dx="1400" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="760" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Flatly Architecture" style="text;html=1;fontSize=22;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="10" width="400" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Frontend ===== -->
+        <mxCell id="fe" value="Frontend: React + Vite (FE/)&lt;br&gt;localhost:5173" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;verticalAlign=top;fontStyle=1;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="70" width="300" height="420" as="geometry" />
+        </mxCell>
+        <mxCell id="fe_pages" value="&lt;b&gt;Pages&lt;/b&gt;&lt;br&gt;Login · Signup · ForgotPassword · Home" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="60" y="130" width="260" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="fe_sbclient" value="&lt;b&gt;supabaseClient.js&lt;/b&gt;&lt;br&gt;uses ANON key" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="60" y="250" width="260" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="fe_api" value="&lt;b&gt;api.js&lt;/b&gt;&lt;br&gt;fetch() to BE + attaches Bearer token" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="60" y="360" width="260" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Backend ===== -->
+        <mxCell id="be" value="Backend: FastAPI (BE/)&lt;br&gt;localhost:8000" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=top;fontStyle=1;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="500" y="290" width="300" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="be_main" value="&lt;b&gt;main.py&lt;/b&gt;&lt;br&gt;GET /  ·  GET /me&lt;br&gt;(future app endpoints)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="520" y="345" width="260" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="be_auth" value="&lt;b&gt;auth.py&lt;/b&gt;&lt;br&gt;get_current_user() · uses SERVICE key" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="520" y="440" width="260" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Supabase ===== -->
+        <mxCell id="sb" value="Supabase (cloud)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;verticalAlign=top;fontStyle=1;arcSize=3;" vertex="1" parent="1">
+          <mxGeometry x="960" y="70" width="380" height="620" as="geometry" />
+        </mxCell>
+        <mxCell id="sb_auth" value="&lt;b&gt;Supabase Auth&lt;/b&gt;&lt;br&gt;sign up · log in · sessions (JWT)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="980" y="110" width="340" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="sb_rest" value="&lt;b&gt;Auto REST API&lt;/b&gt;&lt;br&gt;supabase.rpc(...) · table queries" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="980" y="200" width="340" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="sb_db" value="PostgreSQL database" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;verticalAlign=top;fontStyle=1;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="980" y="290" width="340" height="380" as="geometry" />
+        </mxCell>
+        <mxCell id="db_users" value="&lt;b&gt;auth.users&lt;/b&gt;&lt;br&gt;email · hashed password" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=8;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="325" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="db_profiles" value="&lt;b&gt;public.profiles&lt;/b&gt;&lt;br&gt;id · username" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=8;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="325" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="db_trigger" value="trigger: handle_new_user()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="420" width="300" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="db_fn_find" value="fn: find_account_email(identifier)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="470" width="300" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="db_fn_reset" value="fn: reset_password(identifier, otp, new_pw)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="520" width="300" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="db_app" value="app tables (listings, flats, ...) – planned" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=8;fillColor=#ffffff;strokeColor=#666666;dashed=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="580" width="300" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===== External ===== -->
+        <mxCell id="gmaps" value="&lt;b&gt;Google Maps API&lt;/b&gt;&lt;br&gt;(planned)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="600" width="300" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Edges ===== -->
+        <mxCell id="e_pages_sb" value="" style="endArrow=classic;html=1;strokeColor=#6c8ebf;" edge="1" parent="1" source="fe_pages" target="fe_sbclient">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pages_api" value="" style="endArrow=classic;html=1;strokeColor=#6c8ebf;edgeStyle=orthogonalEdgeStyle;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="fe_pages" target="fe_api">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="50" y="165" /><mxPoint x="50" y="390" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_fe_auth" value="1. signUp / signInWithPassword" style="endArrow=classic;html=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#d6b656;labelBackgroundColor=#ffffff;exitX=1;exitY=0.3;" edge="1" parent="1" source="fe_sbclient" target="sb_auth">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="420" y="268" /><mxPoint x="420" y="140" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_fe_rest" value="2. rpc find_account_email / reset_password" style="endArrow=classic;html=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#d6b656;labelBackgroundColor=#ffffff;exitX=1;exitY=0.7;" edge="1" parent="1" source="fe_sbclient" target="sb_rest">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="880" y="292" /><mxPoint x="880" y="230" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_fe_be" value="3. HTTP + Bearer JWT" style="endArrow=classic;html=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#82b366;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="fe_api" target="be_main">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_main_auth" value="" style="endArrow=classic;html=1;strokeColor=#82b366;" edge="1" parent="1" source="be_main" target="be_auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_be_sbauth" value="4. verify token (get_user)" style="endArrow=classic;html=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#82b366;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.75;" edge="1" parent="1" source="be_auth" target="sb_auth">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="920" y="470" /><mxPoint x="920" y="155" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_be_db" value="5. app data (service key) – planned" style="endArrow=classic;html=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#82b366;dashed=1;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" edge="1" parent="1" source="be" target="db_app">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="650" y="560" /><mxPoint x="900" y="560" /><mxPoint x="900" y="615" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_be_gmaps" value="6." style="endArrow=classic;html=1;strokeColor=#b85450;dashed=1;labelBackgroundColor=#ffffff;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="be" target="gmaps">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_rest_db" value="" style="endArrow=classic;html=1;strokeColor=#d6b656;" edge="1" parent="1" source="sb_rest" target="sb_db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_users_profiles" value="on sign up" style="endArrow=classic;html=1;strokeColor=#666666;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="1" source="db_users" target="db_profiles">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend" value="&lt;b&gt;Flow&lt;/b&gt;&lt;br&gt;1–2: FE talks to Supabase directly for auth (no BE needed)&lt;br&gt;3–4: FE calls BE with the user's token; BE asks Supabase who the user is&lt;br&gt;5–6: BE does app logic with Supabase data and Google Maps&lt;br&gt;Dashed = planned / not built yet" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=12;strokeColor=#999999;fillColor=#ffffff;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="40" y="530" width="420" height="120" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

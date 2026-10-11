@@ -1,11 +1,24 @@
 import { useEffect, useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import { supabase } from './supabaseClient';
+import { api } from './api';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
 
 function Home({ session }) {
+  const [backendResult, setBackendResult] = useState('');
+
+  // Calls the FastAPI /me endpoint to check the FE <-> BE connection
+  async function testBackend() {
+    try {
+      const me = await api('/me');
+      setBackendResult(`Backend says you are ${me.email} (id ${me.id})`);
+    } catch (err) {
+      setBackendResult(`Backend error: ${err.message}`);
+    }
+  }
+
   if (!session) {
     return (
       <div>
@@ -21,6 +34,8 @@ function Home({ session }) {
       <h1>welcome to flatly</h1>
       <p>Logged in as {session.user.user_metadata.username ?? session.user.email}</p>
       <button onClick={() => supabase.auth.signOut()}>Log out</button>
+      <button onClick={testBackend}>Test backend</button>
+      {backendResult && <p>{backendResult}</p>}
     </div>
   );
 }
