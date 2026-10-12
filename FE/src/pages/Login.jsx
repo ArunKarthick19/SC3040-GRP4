@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import Logo from '../components/Logo';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -38,30 +39,33 @@ export default function Login() {
       setError(error.message);
       return;
     }
-    navigate('/');
+    navigate('/start');
   }
 
   return (
-    <div>
-      <h2>Log in</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>
-            Email or username
-            <input value={identifier} onChange={(e) => setIdentifier(e.target.value)} required />
-          </label>
-        </div>
-        <div>
-          <label>
-            Password
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          </label>
-        </div>
-        {error && <p>{error}</p>}
-        <button type="submit" disabled={loading}>{loading ? 'Logging in...' : 'Log in'}</button>
-      </form>
-      <p><Link to="/forgot-password">Forgot password?</Link></p>
-      <p>No account? <Link to="/signup">Sign up</Link></p>
+    <div className="auth-page">
+      <div className="auth-card">
+        <Logo />
+        <h2>Log in</h2>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label>
+              Email or username
+              <input value={identifier} onChange={(e) => setIdentifier(e.target.value)} required />
+            </label>
+          </div>
+          <div>
+            <label>
+              Password
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </label>
+          </div>
+          {error && <p className="alert alert-error">{error}</p>}
+          <button type="submit" disabled={loading}>{loading ? 'Logging in...' : 'Log in'}</button>
+        </form>
+        <p><Link to="/forgot-password">Forgot password?</Link></p>
+        <p>No account? <Link to="/signup">Sign up</Link></p>
+      </div>
     </div>
   );
 }

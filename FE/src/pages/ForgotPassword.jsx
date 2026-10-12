@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import Logo from '../components/Logo';
 
 // Demo only: no OTP is actually sent, the code is always 3040.
 // The reset_password DB function checks it again before changing anything.
@@ -73,58 +74,61 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div>
-      <h2>Reset password</h2>
+    <div className="auth-page">
+      <div className="auth-card">
+        <Logo />
+        <h2>Reset password</h2>
 
-      {step === 'account' && (
-        <form onSubmit={handleAccount}>
-          <div>
-            <label>
-              Email or username
-              <input value={identifier} onChange={(e) => setIdentifier(e.target.value)} required />
-            </label>
-          </div>
-          {error && <p>{error}</p>}
-          <button type="submit" disabled={loading}>{loading ? 'Checking...' : 'Send OTP'}</button>
-        </form>
-      )}
+        {step === 'account' && (
+          <form onSubmit={handleAccount}>
+            <div>
+              <label>
+                Email or username
+                <input value={identifier} onChange={(e) => setIdentifier(e.target.value)} required />
+              </label>
+            </div>
+            {error && <p className="alert alert-error">{error}</p>}
+            <button type="submit" disabled={loading}>{loading ? 'Checking...' : 'Send OTP'}</button>
+          </form>
+        )}
 
-      {step === 'otp' && (
-        <form onSubmit={handleOtp}>
-          <p>An OTP has been sent to {email}.</p>
-          <div>
-            <label>
-              OTP
-              <input value={otp} onChange={(e) => setOtp(e.target.value)} required />
-            </label>
-          </div>
-          {error && <p>{error}</p>}
-          <button type="submit">Verify OTP</button>
-        </form>
-      )}
+        {step === 'otp' && (
+          <form onSubmit={handleOtp}>
+            <p>An OTP has been sent to {email}.</p>
+            <div>
+              <label>
+                OTP
+                <input value={otp} onChange={(e) => setOtp(e.target.value)} required />
+              </label>
+            </div>
+            {error && <p className="alert alert-error">{error}</p>}
+            <button type="submit">Verify OTP</button>
+          </form>
+        )}
 
-      {step === 'password' && (
-        <form onSubmit={handlePassword}>
-          <div>
-            <label>
-              New password
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
-            </label>
-          </div>
-          <div>
-            <label>
-              Re-enter new password
-              <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} />
-            </label>
-          </div>
-          {error && <p>{error}</p>}
-          <button type="submit" disabled={loading}>{loading ? 'Resetting...' : 'Reset password'}</button>
-        </form>
-      )}
+        {step === 'password' && (
+          <form onSubmit={handlePassword}>
+            <div>
+              <label>
+                New password
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+              </label>
+            </div>
+            <div>
+              <label>
+                Re-enter new password
+                <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} />
+              </label>
+            </div>
+            {error && <p className="alert alert-error">{error}</p>}
+            <button type="submit" disabled={loading}>{loading ? 'Resetting...' : 'Reset password'}</button>
+          </form>
+        )}
 
-      {step === 'done' && <p>Password reset. You can now log in with your new password.</p>}
+        {step === 'done' && <p className="alert alert-success">Password reset. You can now log in with your new password.</p>}
 
-      <p><Link to="/login">Back to log in</Link></p>
+        <p><Link to="/login">Back to log in</Link></p>
+      </div>
     </div>
   );
 }

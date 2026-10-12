@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import Logo from '../components/Logo';
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -49,45 +50,48 @@ export default function Signup() {
     }
     // With "Confirm email" off in Supabase, signUp logs the user in straight away
     if (data.session) {
-      navigate('/');
+      navigate('/start');
       return;
     }
     setMessage('Account created, but email confirmation is still on in Supabase. Turn off "Confirm email" to log in directly.');
   }
 
   return (
-    <div>
-      <h2>Sign up</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>
-            Email
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          </label>
-        </div>
-        <div>
-          <label>
-            Username
-            <input value={username} onChange={(e) => setUsername(e.target.value)} required />
-          </label>
-        </div>
-        <div>
-          <label>
-            Password
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
-          </label>
-        </div>
-        <div>
-          <label>
-            Re-enter password
-            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} />
-          </label>
-        </div>
-        {error && <p>{error}</p>}
-        {message && <p>{message}</p>}
-        <button type="submit" disabled={loading}>{loading ? 'Signing up...' : 'Sign up'}</button>
-      </form>
-      <p>Already have an account? <Link to="/login">Log in</Link></p>
+    <div className="auth-page">
+      <div className="auth-card">
+        <Logo />
+        <h2>Sign up</h2>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label>
+              Email
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            </label>
+          </div>
+          <div>
+            <label>
+              Username
+              <input value={username} onChange={(e) => setUsername(e.target.value)} required />
+            </label>
+          </div>
+          <div>
+            <label>
+              Password
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+            </label>
+          </div>
+          <div>
+            <label>
+              Re-enter password
+              <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} />
+            </label>
+          </div>
+          {error && <p className="alert alert-error">{error}</p>}
+          {message && <p className="alert alert-success">{message}</p>}
+          <button type="submit" disabled={loading}>{loading ? 'Signing up...' : 'Sign up'}</button>
+        </form>
+        <p>Already have an account? <Link to="/login">Log in</Link></p>
+      </div>
     </div>
   );
 }
