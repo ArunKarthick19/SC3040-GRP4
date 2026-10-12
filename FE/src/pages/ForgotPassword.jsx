@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import Logo from '../components/Logo';
 
 export default function ForgotPassword() {
   const [identifier, setIdentifier] = useState('');
@@ -38,32 +39,35 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div>
-      <h2>Reset password</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>
-            Email or username
-            <input value={identifier} onChange={(e) => setIdentifier(e.target.value)} required />
-          </label>
-        </div>
-        <div>
-          <label>
-            New password
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
-          </label>
-        </div>
-        <div>
-          <label>
-            Re-enter new password
-            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} />
-          </label>
-        </div>
-        {error && <p>{error}</p>}
-        {message && <p>{message}</p>}
-        <button type="submit" disabled={loading}>{loading ? 'Resetting...' : 'Reset password'}</button>
-      </form>
-      <p><Link to="/login">Back to log in</Link></p>
+    <div className="auth-page">
+      <div className="auth-card">
+        <Logo />
+        <h2>Reset password</h2>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label>
+              Email or username
+              <input value={identifier} onChange={(e) => setIdentifier(e.target.value)} required />
+            </label>
+          </div>
+          <div>
+            <label>
+              New password
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+            </label>
+          </div>
+          <div>
+            <label>
+              Re-enter new password
+              <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} />
+            </label>
+          </div>
+          {error && <p className="alert alert-error">{error}</p>}
+          {message && <p className="alert alert-success">{message}</p>}
+          <button type="submit" disabled={loading}>{loading ? 'Resetting...' : 'Reset password'}</button>
+        </form>
+        <p><Link to="/login">Back to log in</Link></p>
+      </div>
     </div>
   );
 }
