@@ -7,6 +7,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ChooseRole from "./pages/ChooseRole";
 import BuyerPage from "./pages/BuyerPage";
 import SellerPage from "./pages/SellerPage";
+import ProfilePage from "./pages/ProfilePage";
 import Logo from "./components/Logo";
 import Navbar from "./components/Navbar";
 import { BuyIcon, SellIcon } from "./components/icons";
@@ -262,6 +263,14 @@ export default function App() {
         element={
           <RequireAuth session={session}>
             <SellerPage session={session} />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <RequireAuth session={session}>
+            <ProfilePage session={session} />
           </RequireAuth>
         }
       />
