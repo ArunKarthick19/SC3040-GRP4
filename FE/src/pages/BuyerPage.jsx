@@ -136,7 +136,7 @@ export default function BuyerPage({ session }) {
     <>
       <Navbar session={session} />
 
-      <main className="section">
+      <main className="section section-compact">
         <div className="container">
           <p><Link to="/start">← Back</Link></p>
           <div className="section-head">
@@ -146,7 +146,7 @@ export default function BuyerPage({ session }) {
           </div>
 
           <div className="buyer-layout">
-            <form className="panel" onSubmit={handleSubmit}>
+            <form className="panel buyer-form" onSubmit={handleSubmit}>
               <div>
                 <label>
                   Buying as
@@ -194,8 +194,10 @@ export default function BuyerPage({ session }) {
                   <input type="number" min="0" step="any" value={form.other_debts} onChange={update('other_debts')} />
                 </label>
               </div>
-              {error && <p className="alert alert-error">{error}</p>}
-              <button type="submit" disabled={loading}>{loading ? 'Calculating...' : 'Show my options'}</button>
+              <div className="buyer-form-actions">
+                {error && <p className="alert alert-error">{error}</p>}
+                <button type="submit" disabled={loading}>{loading ? 'Calculating...' : 'Show my options'}</button>
+              </div>
             </form>
 
             <div className="buyer-results">
@@ -208,10 +210,24 @@ export default function BuyerPage({ session }) {
                     <div className="loan-amount">{money(result.budget)}</div>
                     <div className="loan-sub">Highest flat price you can fund with a loan, your cash and CPF</div>
                   </div>
-                  <LoanCard title="HDB loan" loan={hdb} highlight={best === 'hdb'} />
-                  <LoanCard title="Bank loan" loan={bank} highlight={best === 'bank'} />
+                  <div className="loan-grid">
+                    <LoanCard title="HDB loan" loan={hdb} highlight={best === 'hdb'} />
+                    <LoanCard title="Bank loan" loan={bank} highlight={best === 'bank'} />
+                  </div>
                   <div className="panel">
-                    <h3>Recommended towns</h3>
+                    <div className="panel-head">
+                      <h3>Recommended towns</h3>
+                      {result.town_map && (
+                        <button
+                          type="button"
+                          className="btn-outline"
+                          // Open on the best match, or any town that sold this flat type
+                          onClick={() => setMapTown(result.locations?.[0]?.town ?? Object.keys(result.town_map)[0])}
+                        >
+                          View map
+                        </button>
+                      )}
+                    </div>
                     <Locations locations={result.locations} flatType={result.flatType} budget={result.budget} year={result.locations_year} onSelect={setMapTown} />
                   </div>
                   <p className="fine-print">
