@@ -301,6 +301,7 @@ export default function BuyerPage({ session }) {
               )}
             </div>
           </div>
+
         </div>
       </main>
 

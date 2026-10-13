@@ -33,6 +33,9 @@ cd BE
 python train_price_model.py   # writes models/price_model.joblib
 ```
 
+### Location check (nearest MRT / bus stops)
+`build_transport.py` downloads every MRT/LRT station and bus stop from OneMap into `models/transport.json` (~10 min). Already done; re-run only if stations or stops change. Addresses are looked up live through OneMap.
+
 `build_town_boundaries.py` makes `FE/public/sg_towns.geojson` (town outlines for the heat map). Already done; only re-run if URA boundaries change.
 
 ## Supabase setup (auth)

@@ -623,6 +623,87 @@ form button[type='submit'] {
   grid-column: 1 / -1;
 }
 
+.buyer-form > .field-span-2 {
+  grid-column: span 2;
+}
+
+/* ---------- Location check (nearest MRT / bus stops) ---------- */
+
+.location-check {
+  margin-top: 24px;
+}
+
+.location-check > .muted {
+  margin: 0 0 16px;
+}
+
+.location-result {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: 24px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
+.location-details {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+}
+
+.location-address {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.location-map {
+  min-height: 380px;
+  height: 100%;
+  border-radius: var(--radius);
+}
+
+.place-list-title {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+.place-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.place-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.place-distance {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  white-space: nowrap;
+}
+
+.place-distance .muted {
+  font-size: 12px;
+}
+
+.line-code {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 0 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
 .buyer-form-actions {
   grid-column: 1 / -1;
   display: flex;
@@ -750,6 +831,13 @@ form button[type='submit'] {
   color: #fff;
   background: var(--ink);
   border-color: var(--ink);
+}
+
+/* Labels on the nearest MRT / bus stop drawn when hovering a block */
+.leaflet-tooltip.nearest-label {
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .model-note {
@@ -956,8 +1044,52 @@ form button[type='submit'] {
 }
 
 .map-frame {
+  position: relative;
   flex: 1;
   min-height: 0;
+}
+
+/* Details of the hovered block, pinned to the map's top-right corner */
+.map-hover-card {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1000;
+  display: grid;
+  gap: 4px;
+  width: 270px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  pointer-events: none;
+}
+
+.map-hover-card ul {
+  display: grid;
+  gap: 8px;
+  margin: 6px 0 0;
+  padding: 8px 0 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+
+.map-hover-card li {
+  display: flex;
+  gap: 8px;
+}
+
+.map-hover-swatch {
+  flex-shrink: 0;
+  width: 14px;
+  height: 4px;
+  margin-top: 7px;
+  border-radius: 2px;
+}
+
+.map-hover-swatch-bus {
+  background: repeating-linear-gradient(90deg, #1f1a1a 0 3px, transparent 3px 6px);
 }
 
 .map {
@@ -1151,6 +1283,7 @@ form button[type='submit'] {
   .hero .container,
   .feature-grid,
   .loan-grid,
+  .location-result,
   .steps {
     grid-template-columns: 1fr;
   }
@@ -1175,6 +1308,10 @@ form button[type='submit'] {
 
   .buyer-form {
     grid-template-columns: 1fr;
+  }
+
+  .buyer-form > .field-span-2 {
+    grid-column: auto;
   }
 
   .buyer-form button[type='submit'] {

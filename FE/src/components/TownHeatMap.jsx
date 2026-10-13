@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON, CircleMarker, Tooltip, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, CircleMarker, Polyline, Tooltip, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { distance, lineColor } from '../mrtLines';
 
 const COLORS = { good: '#2f9e6b', ok: '#f0b429', bad: '#e6564c', none: '#d9d4d3' };
 
@@ -48,6 +49,79 @@ function FitTo({ features }) {
   return null;
 }
 
+// Fixed card in the map's corner with the hovered block's details (a floating tooltip would cover the lines)
+function BlockCard({ block }) {
+  const mrt = block.nearest_mrt;
+  const bus = block.nearest_bus;
+  return (
+    <div className="map-hover-card">
+      <strong>Blk {block.block} {titleCase(block.street)}</strong>
+      <span className="muted">
+        Median {money(block.median_price)} · {block.transactions} sale{block.transactions > 1 ? 's' : ''}
+      </span>
+      {mrt && (
+        <ul>
+          <li>
+            <span className="map-hover-swatch" style={{ background: lineColor(mrt.codes[0]) }} />
+            <span>
+              {mrt.name} ({mrt.codes.join('/')})<br />
+              <strong>{distance(mrt.distance_m)}</strong> · ~{mrt.walk_min} min walk
+            </span>
+          </li>
+          <li>
+            <span className="map-hover-swatch map-hover-swatch-bus" />
+            <span>
+              Bus stop {bus.code}{bus.road && ` · ${bus.road}`}<br />
+              <strong>{distance(bus.distance_m)}</strong> · ~{bus.walk_min} min walk
+            </span>
+          </li>
+        </ul>
+      )}
+    </div>
+  );
+}
+
+// Straight lines from a block to its nearest MRT/LRT station (in the line's colour) and bus stop (dashed)
+function NearestLines({ block }) {
+  const mrt = block.nearest_mrt;
+  const bus = block.nearest_bus;
+  const color = lineColor(mrt.codes[0]);
+  const from = [block.lat, block.lng];
+  // Labels go on the far side of each stop, clear of the block's own tooltip above it
+  const side = (place) => (place.lng < block.lng ? 'left' : 'right');
+  const offset = (place) => [place.lng < block.lng ? -8 : 8, 0];
+  return (
+    <>
+      <Polyline positions={[from, [mrt.lat, mrt.lng]]} pathOptions={{ color, weight: 4, opacity: 0.9 }} interactive={false} />
+      <Polyline
+        positions={[from, [bus.lat, bus.lng]]}
+        pathOptions={{ color: '#1f1a1a', weight: 2.5, dashArray: '4 6' }}
+        interactive={false}
+      />
+      <CircleMarker
+        center={[mrt.lat, mrt.lng]}
+        radius={8}
+        pathOptions={{ color: '#ffffff', weight: 2, fillColor: color, fillOpacity: 1 }}
+        interactive={false}
+      >
+        <Tooltip permanent direction={side(mrt)} offset={offset(mrt)} className="nearest-label">
+          {mrt.name} · {distance(mrt.distance_m)}
+        </Tooltip>
+      </CircleMarker>
+      <CircleMarker
+        center={[bus.lat, bus.lng]}
+        radius={6}
+        pathOptions={{ color: '#ffffff', weight: 2, fillColor: '#1f1a1a', fillOpacity: 1 }}
+        interactive={false}
+      >
+        <Tooltip permanent direction={side(bus)} offset={offset(bus)} className="nearest-label">
+          Bus {bus.code} · {distance(bus.distance_m)}
+        </Tooltip>
+      </CircleMarker>
+    </>
+  );
+}
+
 function Legend({ view }) {
   const items = view === 'island'
     ? [[COLORS.good, '50%+ of sales in budget'], [COLORS.ok, '20–49%'], [COLORS.bad, 'Under 20%'], [COLORS.none, 'No sales of this flat type']]
@@ -74,6 +148,7 @@ export default function TownHeatMap({
   const [activeType, setActiveType] = useState(flatType);
   const [region, setRegion] = useState(null); // zoomed-in region
   const [hoverRegion, setHoverRegion] = useState(null);
+  const [hoverBlock, setHoverBlock] = useState(null); // block whose nearest MRT / bus stop is drawn
 
   const townMap = townMaps?.[activeType] ?? chosenTownMap;
   // Towns to emphasise: the hovered region, else the zoomed one
@@ -114,12 +189,14 @@ export default function TownHeatMap({
 
   function pickType(type) {
     setBlocks(null);
+    setHoverBlock(null);
     setActiveType(type);
   }
   const info = townMap[selected];
 
   function openBlocks(name) {
     setBlocks(null);
+    setHoverBlock(null);
     setSelected(name);
     setView('blocks');
   }
@@ -217,6 +294,7 @@ export default function TownHeatMap({
         </div>
 
         <div className="map-frame">
+          {view === 'blocks' && hoverBlock && <BlockCard block={hoverBlock} />}
           {boundaries && (
             <MapContainer center={[1.3521, 103.8198]} zoom={11} minZoom={11} maxZoom={18} scrollWheelZoom className="map">
               <TileLayer url="https://www.onemap.gov.sg/maps/tiles/Grey/{z}/{x}/{y}.png" attribution={ONEMAP_ATTRIBUTION} />
@@ -238,18 +316,23 @@ export default function TownHeatMap({
                 />
               )}
 
+              {/* Lines from the hovered block to its nearest MRT and bus stop, drawn under the block dots */}
+              {view === 'blocks' && hoverBlock?.nearest_mrt && (
+                <NearestLines block={hoverBlock} />
+              )}
+
               {view === 'blocks' && blocks?.blocks.map((b) => (
                 <CircleMarker
                   key={`${b.block} ${b.street}`}
                   center={[b.lat, b.lng]}
                   radius={6 + Math.min(b.transactions, 6)}
                   pathOptions={{ color: '#ffffff', weight: 1, fillColor: blockColor(b.median_price, budget), fillOpacity: 0.9 }}
-                >
-                  <Tooltip>
-                    <strong>Blk {b.block} {titleCase(b.street)}</strong><br />
-                    Median {money(b.median_price)} · {b.transactions} sale{b.transactions > 1 ? 's' : ''}
-                  </Tooltip>
-                </CircleMarker>
+                  eventHandlers={{
+                    mouseover: () => setHoverBlock(b),
+                    mouseout: () => setHoverBlock(null),
+                    click: () => setHoverBlock(b), // touch screens have no hover
+                  }}
+                />
               ))}
 
               {/* Whole island for comparing towns, zoomed in on the town for its blocks */}
@@ -274,6 +357,7 @@ export default function TownHeatMap({
               {blocks.blocks.length < blocks.total
                 ? `Showing ${blocks.blocks.length} of ${blocks.total} blocks (the rest are still being located)`
                 : `${blocks.total} blocks · bigger dots had more sales`}
+              {' · hover a block to see its nearest MRT and bus stop'}
             </span>
           )}
         </div>

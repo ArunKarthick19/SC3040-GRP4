@@ -1,10 +1,12 @@
 from typing import Literal
 
-from fastapi import FastAPI, Depends
+import httpx
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 import affordability
+import location
 import price_model
 from auth import get_current_user
 from recommender import FLAT_TYPES, model_year, recommend_locations, suggest_flat_types, town_affordability, town_blocks
@@ -62,9 +64,35 @@ def buyer_recommendations(profile: BuyerProfile):
     return result
 
 
+@app.get("/api/location")
+def location_check(block: str = "", street: str = "", postal: str = ""):
+    """Address and nearest MRT/LRT stations and bus stops, from a postal code or block + street."""
+    postal, block, street = postal.strip(), block.strip(), street.strip()
+    if postal:
+        if not (postal.isdigit() and len(postal) == 6):
+            raise HTTPException(422, "Postal code must be 6 digits")
+        query = postal
+    elif block and street:
+        query = f"{block} {street}"
+    else:
+        raise HTTPException(422, "Enter a postal code, or a block and street name")
+
+    try:
+        result = location.analyse(query, block or None)
+    except httpx.HTTPError:
+        raise HTTPException(502, "Couldn't reach OneMap to look up the address. Try again shortly.")
+    except RuntimeError as err:
+        raise HTTPException(503, str(err))
+    if result is None:
+        raise HTTPException(404, "Couldn't find that address. Check the block and street name, or try the postal code.")
+    return result
+
+
 @app.get("/api/buyer/town-blocks")
 def buyer_town_blocks(town: str, flat_type: Literal[tuple(FLAT_TYPES)]):
-    return town_blocks(town, flat_type)
+    result = town_blocks(town, flat_type)
+    location.add_nearest(result["blocks"])  # nearest MRT and bus stop, drawn on the map on hover
+    return result
 
 
 if __name__ == "__main__":
