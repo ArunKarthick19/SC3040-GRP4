@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import TownHeatMap from '../components/TownHeatMap';
@@ -6,6 +6,21 @@ import TownHeatMap from '../components/TownHeatMap';
 const FLAT_TYPES = ['2 ROOM', '3 ROOM', '4 ROOM', '5 ROOM', 'EXECUTIVE'];
 
 const money = (n) => `$${Math.round(n).toLocaleString('en-SG')}`;
+
+// Scrolls so `el` sits `offset` px below the top of the screen (clear of the sticky navbar), over `duration` ms
+function scrollToElement(el, duration = 500, offset = 88) {
+  const start = window.scrollY;
+  const end = el.getBoundingClientRect().top + window.scrollY - offset;
+  const startTime = performance.now();
+
+  function step(now) {
+    const t = Math.min((now - startTime) / duration, 1);
+    const eased = 1 - Math.pow(1 - t, 3); // fast at first, slows down at the end
+    window.scrollTo(0, start + (end - start) * eased);
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
 
 function LoanCard({ title, loan, highlight }) {
   if (!loan.eligible) {
@@ -96,6 +111,12 @@ export default function BuyerPage({ session }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [mapTown, setMapTown] = useState(null);
+  const resultsRef = useRef(null);
+
+  // Bring the results into view each time new ones arrive
+  useEffect(() => {
+    if (result && resultsRef.current) scrollToElement(resultsRef.current, 500);
+  }, [result]);
 
   const update = (field) => (e) => setForm({ ...form, [field]: e.target.value });
 
@@ -205,7 +226,7 @@ export default function BuyerPage({ session }) {
                 <div className="panel muted">Fill in your details to see your loan options and budget.</div>
               ) : (
                 <>
-                  <div className="panel budget-panel">
+                  <div className="panel budget-panel" ref={resultsRef}>
                     <div className="loan-sub">Your estimated budget</div>
                     <div className="loan-amount">{money(result.budget)}</div>
                     <div className="loan-sub">Highest flat price you can fund with a loan, your cash and CPF</div>
