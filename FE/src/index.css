@@ -618,6 +618,35 @@ form button[type='submit'] {
   margin-bottom: 0;
 }
 
+.seller-form .required-mark {
+  color: #aaa19f;
+  font-weight: 500;
+}
+
+.seller-form .photo-selection {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* Native macOS selects ignore padding; give seller controls a shared height. */
+.seller-form input:not([type='file']),
+.seller-form select {
+  height: 52px;
+}
+
+.seller-form select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e5553' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+}
+
 /* A field that takes a whole row, e.g. the seller's photo upload */
 .buyer-form > .field-wide {
   grid-column: 1 / -1;
@@ -625,6 +654,171 @@ form button[type='submit'] {
 
 .buyer-form > .field-span-2 {
   grid-column: span 2;
+}
+
+/* ---------- Saved searches and flats ---------- */
+
+.saved-panel {
+  margin-top: 24px;
+}
+
+
+.saved-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.saved-head h3 {
+  margin: 0;
+}
+
+.saved-panel > div > .muted {
+  margin: 0;
+  font-size: 14px;
+}
+
+.saved-view-all {
+  padding: 4px 10px;
+  font-size: 13px;
+}
+
+.saved-list {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.saved-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.saved-list li > div:first-child {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  font-size: 14px;
+}
+
+.saved-list .muted {
+  font-size: 13px;
+}
+
+.saved-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.saved-actions button {
+  padding: 8px 14px;
+  font-size: 13px;
+}
+
+/* Saved flats: a wider map dialog, map ~3/4 with a scrollable list beside it */
+.map-dialog-wide {
+  max-width: 1320px;
+}
+
+.saved-map-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+  gap: 16px;
+  min-height: 0;
+}
+
+.saved-map-layout .map {
+  height: min(68vh, 680px);
+}
+
+.saved-map-list {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  max-height: min(68vh, 680px);
+  margin: 0;
+  padding: 0 4px 0 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.saved-map-list .saved-pick {
+  width: 100%;
+  border: 1px solid var(--line);
+}
+
+.saved-pick-active,
+.saved-pick-active:hover {
+  border-color: var(--ink) !important;
+  background: var(--brand-softer);
+}
+
+/* Small dialog, e.g. saved searches (reuses the map overlay) */
+.modal-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100vh - 48px);
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.modal-dialog > .muted {
+  margin: 0;
+}
+
+.modal-list {
+  overflow-y: auto;
+}
+
+.modal-list li {
+  padding: 4px 4px 4px 0;
+}
+
+/* A saved search row is one big button: undo the global pill button look */
+.saved-pick {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+  justify-items: start;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 400;
+  text-align: left;
+  color: inherit;
+  background: transparent;
+}
+
+.saved-pick:hover {
+  background: var(--brand-softer);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.saved-pick:hover strong {
+  color: var(--brand);
+}
+
+.save-note {
+  margin: 0;
+  font-size: 14px;
 }
 
 /* ---------- Location check (nearest MRT / bus stops) ---------- */
@@ -1066,6 +1260,36 @@ form button[type='submit'] {
   pointer-events: none;
 }
 
+/* A clicked block: the card stays up and its buttons work */
+.map-hover-card-pinned {
+  pointer-events: auto;
+  border: 1.5px solid var(--ink);
+}
+
+.map-hover-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.map-hover-close {
+  margin: -6px -8px 0 0;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.map-hover-card > button {
+  margin-top: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+}
+
+.map-hover-hint {
+  margin-top: 6px;
+  font-size: 12px;
+}
+
 .map-hover-card ul {
   display: grid;
   gap: 8px;
@@ -1284,6 +1508,7 @@ form button[type='submit'] {
   .feature-grid,
   .loan-grid,
   .location-result,
+  .saved-map-layout,
   .steps {
     grid-template-columns: 1fr;
   }

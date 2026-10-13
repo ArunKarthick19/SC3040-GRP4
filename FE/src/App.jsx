@@ -106,7 +106,7 @@ function Home({ session }) {
               <h2>One place for both sides of the move</h2>
               <p>
                 Whether you're getting your first flat or moving on from your
-                current one, Flaty does the maths for you.
+                current one, Flatly does the maths for you.
               </p>
             </div>
 
@@ -174,7 +174,7 @@ function Home({ session }) {
               <li>
                 <h3>Add photos</h3>
                 <p>
-                  Sellers upload up to 6 photos so Flaty can assess the
+                  Sellers upload up to 6 photos so Flatly can assess the
                   condition of the flat.
                 </p>
               </li>
@@ -207,7 +207,7 @@ function Home({ session }) {
       <footer className="footer">
         <div className="container">
           <Logo />
-          <span>© {new Date().getFullYear()} Flaty · SC3040 Group 4</span>
+          <span>© {new Date().getFullYear()} Flatly · SC3040 Group 4</span>
         </div>
       </footer>
     </>

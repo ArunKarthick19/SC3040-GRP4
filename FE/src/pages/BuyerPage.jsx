@@ -1,8 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import TownHeatMap from '../components/TownHeatMap';
 import { scrollToElement } from '../scroll';
+import SavedPanel from '../components/SavedPanel';
+import SavedFlatsMap from '../components/SavedFlatsMap';
+import SavedSearchesModal from '../components/SavedSearchesModal';
+import {
+  blockKey, deleteBookmark, deleteSearch, listBookmarks, listSearches, saveBookmark, saveSearch,
+} from '../saves';
 
 const FLAT_TYPES = ['2 ROOM', '3 ROOM', '4 ROOM', '5 ROOM', 'EXECUTIVE'];
 
@@ -125,6 +131,23 @@ export default function BuyerPage({ session }) {
   const [mapTown, setMapTown] = useState(null);
   const [mapSuggest, setMapSuggest] = useState(false); // map opened from "Suggested flat types"
   const [mapType, setMapType] = useState(null); // flat type the map opens on
+  const [savedMap, setSavedMap] = useState(null); // { focusId } while the saved flats map is open
+  const [searchesOpen, setSearchesOpen] = useState(false); // saved searches modal
+  const [searches, setSearches] = useState([]);
+  const [bookmarks, setBookmarks] = useState([]);
+  const [savesError, setSavesError] = useState('');
+  const [saveNote, setSaveNote] = useState('');
+
+  useEffect(() => {
+    Promise.all([listSearches(), listBookmarks()])
+      .then(([s, b]) => {
+        setSearches(s);
+        setBookmarks(b);
+      })
+      .catch((err) => setSavesError(err.message));
+  }, []);
+
+  const savedKeys = useMemo(() => new Set(bookmarks.map(blockKey)), [bookmarks]);
   const resultsRef = useRef(null);
 
   // Bring the results into view each time new ones arrive
@@ -162,6 +185,62 @@ export default function BuyerPage({ session }) {
   function handleSubmit(e) {
     e.preventDefault();
     getResults(form);
+  }
+
+  async function handleSaveSearch() {
+    setSaveNote('');
+    if (!form.monthly_income || !form.cash_savings || !form.cpf_oa || !form.age) {
+      setSaveNote('Fill in your income, savings, CPF and age first.');
+      return;
+    }
+    if (searches.some((s) => JSON.stringify(s.criteria) === JSON.stringify(form))) {
+      setSaveNote('This search is already saved.');
+      return;
+    }
+    const name = `${flatTypeName(form.flat_type)} · ${money(form.monthly_income)}/mo · ${money(form.cash_savings)} cash · ` +
+      `${money(form.cpf_oa)} CPF · age ${form.age}`;
+    try {
+      const saved = await saveSearch(name, form);
+      setSearches([saved, ...searches]);
+      setSaveNote('Search saved. Find it under "Saved" at the bottom of the page.');
+    } catch (err) {
+      setSaveNote(err.message);
+    }
+  }
+
+  function loadSearch(search) {
+    setForm(search.criteria);
+    getResults(search.criteria);
+  }
+
+  async function removeSearch(id) {
+    try {
+      await deleteSearch(id);
+      setSearches(searches.filter((s) => s.id !== id));
+    } catch (err) {
+      setSavesError(err.message);
+    }
+  }
+
+  async function addBookmark(block, town, flatType) {
+    const saved = await saveBookmark(block, town, flatType, result.locations_year);
+    setBookmarks((list) => [saved, ...list]);
+  }
+
+  async function removeBookmark(id) {
+    try {
+      await deleteBookmark(id);
+      setBookmarks((list) => list.filter((b) => b.id !== id));
+    } catch (err) {
+      setSavesError(err.message);
+    }
+  }
+
+  async function removeBookmarkByKey(key) {
+    const bookmark = bookmarks.find((b) => blockKey(b) === key);
+    if (!bookmark) return;
+    await deleteBookmark(bookmark.id);
+    setBookmarks((list) => list.filter((b) => b.id !== bookmark.id));
   }
 
   // Opens the map on the best match, or any town that sold this flat type.
@@ -257,6 +336,14 @@ export default function BuyerPage({ session }) {
               </div>
               <div className="buyer-form-actions">
                 {error && <p className="alert alert-error">{error}</p>}
+                {saveNote && !error && <p className="muted save-note">{saveNote}</p>}
+                <button type="button" className="btn-ghost" onClick={() => setSearchesOpen(true)}>
+                  View saved searches{searches.length > 0 && ` (${searches.length})`}
+                </button>
+                <button type="button" className="btn-ghost" onClick={() => setSavedMap({ focusId: null })}>
+                  View saved flats{bookmarks.length > 0 && ` (${bookmarks.length})`}
+                </button>
+                <button type="button" className="btn-outline" onClick={handleSaveSearch}>☆ Save this search</button>
                 <button type="submit" disabled={loading}>{loading ? 'Calculating...' : 'Show my options'}</button>
               </div>
             </form>
@@ -302,6 +389,13 @@ export default function BuyerPage({ session }) {
             </div>
           </div>
 
+          <SavedPanel
+            bookmarks={bookmarks}
+            error={savesError}
+            onViewBookmark={(b) => setSavedMap({ focusId: b.id })}
+            onViewAllBookmarks={() => setSavedMap({ focusId: null })}
+            onDeleteBookmark={removeBookmark}
+          />
         </div>
       </main>
 
@@ -315,7 +409,34 @@ export default function BuyerPage({ session }) {
           flatTypeOptions={mapSuggest ? suggestions?.options : undefined}
           modelInfo={result.price_model}
           year={result.locations_year}
+          savedKeys={savedKeys}
+          onSaveBlock={addBookmark}
+          onUnsaveBlock={removeBookmarkByKey}
           onClose={() => setMapTown(null)}
+        />
+      )}
+
+      {searchesOpen && (
+        <SavedSearchesModal
+          searches={searches}
+          onPick={(search) => {
+            setSearchesOpen(false);
+            loadSearch(search);
+          }}
+          onDelete={removeSearch}
+          onClose={() => setSearchesOpen(false)}
+        />
+      )}
+
+      {savedMap && (
+        <SavedFlatsMap
+          bookmarks={bookmarks}
+          focusId={savedMap.focusId}
+          onRemove={async (id) => {
+            await deleteBookmark(id);
+            setBookmarks((list) => list.filter((b) => b.id !== id));
+          }}
+          onClose={() => setSavedMap(null)}
         />
       )}
     </>

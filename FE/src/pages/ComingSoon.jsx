@@ -11,7 +11,7 @@ export default function ComingSoon({ session, title }) {
         <div className="container">
           <div className="section-head">
             <h2>{title}</h2>
-            <p>This part of Flaty is still being built. Check back soon.</p>
+            <p>This part of Flatly is still being built. Check back soon.</p>
             <Link to="/start" className="btn">Back</Link>
           </div>
         </div>

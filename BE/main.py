@@ -1,13 +1,15 @@
 from typing import Literal
 
 import httpx
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 import affordability
 import location
 import price_model
+import gemini_valuation
+import seller_valuation
 from auth import get_current_user
 from recommender import FLAT_TYPES, model_year, recommend_locations, suggest_flat_types, town_affordability, town_blocks
 
@@ -93,6 +95,68 @@ def buyer_town_blocks(town: str, flat_type: Literal[tuple(FLAT_TYPES)]):
     result = town_blocks(town, flat_type)
     location.add_nearest(result["blocks"])  # nearest MRT and bus stop, drawn on the map on hover
     return result
+
+
+class SellerProfile(BaseModel):
+    town: str = Field(min_length=1, max_length=100)
+    block: str = Field(min_length=1, max_length=20)
+    street: str = Field(min_length=1, max_length=100)
+    flat_type: Literal[tuple(FLAT_TYPES)]
+    floor_area: float = Field(gt=0, le=1000, allow_inf_nan=False)
+    remaining_lease: float = Field(gt=0, le=99, allow_inf_nan=False)
+    storey: int = Field(ge=1, le=100)
+
+    @field_validator("town", "block", "street")
+    @classmethod
+    def nonblank(cls, value):
+        value = value.strip()
+        if not value:
+            raise ValueError("Must not be blank")
+        return value
+
+
+@app.get("/api/seller/options")
+def seller_options():
+    try:
+        return seller_valuation.seller_options()
+    except seller_valuation.SellerDataUnavailable as err:
+        raise HTTPException(503, str(err)) from err
+
+
+@app.post("/api/seller/valuation")
+def seller_price(profile: SellerProfile):
+    try:
+        return seller_valuation.estimate_price(**profile.model_dump())
+    except seller_valuation.SellerDataUnavailable as err:
+        raise HTTPException(503, str(err)) from err
+    except ValueError as err:
+        raise HTTPException(422, str(err)) from err
+
+
+class SellerPhotoProfile(SellerProfile):
+    photos: list[gemini_valuation.SellerPhoto] = Field(min_length=1, max_length=gemini_valuation.MAX_PHOTOS)
+
+
+@app.post("/api/seller/valuation-with-photos")
+async def seller_price_with_photos(profile: SellerPhotoProfile, user=Depends(get_current_user)):
+    # Paid external requests require a valid session; the base-only endpoint stays
+    # available exactly as before. The starting value is always calculated here.
+    try:
+        parts = gemini_valuation.photo_parts(profile.photos)
+    except ValueError as err:
+        raise HTTPException(422, str(err)) from err
+    details = profile.model_dump(exclude={"photos"})
+    base = seller_price(SellerProfile(**details))
+    if not base["available"]:
+        return {**base, "ai_status": "not_requested"}
+    try:
+        assessment = await gemini_valuation.assess_condition(details, base, parts)
+    except gemini_valuation.GeminiUnavailable as err:
+        return {
+            **base, "ai_status": "unavailable", "ai_error": str(err),
+            "estimated_value": base["base_valuation"],
+        }
+    return {**base, **assessment, "ai_status": "completed"}
 
 
 if __name__ == "__main__":

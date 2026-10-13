@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, CircleMarker, Polyline, Tooltip, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { distance, lineColor } from '../mrtLines';
+import { ONEMAP_ATTRIBUTION, distance, lineColor } from '../mrtLines';
+import { blockKey } from '../saves';
 
 const COLORS = { good: '#2f9e6b', ok: '#f0b429', bad: '#e6564c', none: '#d9d4d3' };
 
@@ -36,11 +37,6 @@ function blockColor(median, budget) {
   return COLORS.bad;
 }
 
-const ONEMAP_ATTRIBUTION =
-  '<img src="https://www.onemap.gov.sg/web-assets/images/logo/om_logo.png" style="height:20px;width:20px;"/>&nbsp;' +
-  '<a href="https://www.onemap.gov.sg/" target="_blank" rel="noopener noreferrer">OneMap</a>&nbsp;&copy;&nbsp;contributors&nbsp;&#124;&nbsp;' +
-  '<a href="https://www.sla.gov.sg/" target="_blank" rel="noopener noreferrer">Singapore Land Authority</a>';
-
 function FitTo({ features }) {
   const map = useMap();
   useEffect(() => {
@@ -50,12 +46,17 @@ function FitTo({ features }) {
 }
 
 // Fixed card in the map's corner with the hovered block's details (a floating tooltip would cover the lines)
-function BlockCard({ block }) {
+// subtitle (optional): extra line under the address, e.g. town and flat type
+export function BlockCard({ block, subtitle, pinned, saved, saving, onToggleSave, onClose }) {
   const mrt = block.nearest_mrt;
   const bus = block.nearest_bus;
   return (
-    <div className="map-hover-card">
-      <strong>Blk {block.block} {titleCase(block.street)}</strong>
+    <div className={`map-hover-card${pinned ? ' map-hover-card-pinned' : ''}`}>
+      <div className="map-hover-head">
+        <strong>Blk {block.block} {titleCase(block.street)}</strong>
+        {pinned && <button type="button" className="btn-ghost map-hover-close" onClick={onClose} aria-label="Unpin">✕</button>}
+      </div>
+      {subtitle && <span className="muted">{subtitle}</span>}
       <span className="muted">
         Median {money(block.median_price)} · {block.transactions} sale{block.transactions > 1 ? 's' : ''}
       </span>
@@ -77,12 +78,19 @@ function BlockCard({ block }) {
           </li>
         </ul>
       )}
+      {pinned && onToggleSave ? (
+        <button type="button" className={saved ? 'btn-outline' : ''} onClick={onToggleSave} disabled={saving}>
+          {saving ? 'Saving...' : saved ? '★ Saved · remove' : '☆ Save flat'}
+        </button>
+      ) : (
+        onToggleSave && <span className="muted map-hover-hint">{saved ? '★ Saved · ' : ''}Click the block to pin it and save</span>
+      )}
     </div>
   );
 }
 
 // Straight lines from a block to its nearest MRT/LRT station (in the line's colour) and bus stop (dashed)
-function NearestLines({ block }) {
+export function NearestLines({ block }) {
   const mrt = block.nearest_mrt;
   const bus = block.nearest_bus;
   const color = lineColor(mrt.codes[0]);
@@ -137,8 +145,10 @@ function Legend({ view }) {
 
 // flatTypeOptions (optional): flat types to switch between, shown as chips; needs townMaps for each of them.
 // modelInfo (optional): price model accuracy, shown as a note on where the suggestions come from.
+// savedKeys / onSaveBlock / onUnsaveBlock (optional): bookmarking blocks; savedKeys is a Set of blockKey()s.
 export default function TownHeatMap({
   town, flatType, budget, townMap: chosenTownMap, townMaps, flatTypeOptions, modelInfo, year, onClose,
+  savedKeys, onSaveBlock, onUnsaveBlock,
 }) {
   const [boundaries, setBoundaries] = useState(null);
   const [selected, setSelected] = useState(town);
@@ -149,6 +159,10 @@ export default function TownHeatMap({
   const [region, setRegion] = useState(null); // zoomed-in region
   const [hoverRegion, setHoverRegion] = useState(null);
   const [hoverBlock, setHoverBlock] = useState(null); // block whose nearest MRT / bus stop is drawn
+  const [pinnedBlock, setPinnedBlock] = useState(null); // clicked block, which stays shown and can be saved
+  const [saving, setSaving] = useState(false);
+  const shownBlock = hoverBlock ?? pinnedBlock;
+  const keyOf = (b) => blockKey({ ...b, flat_type: activeType });
 
   const townMap = townMaps?.[activeType] ?? chosenTownMap;
   // Towns to emphasise: the hovered region, else the zoomed one
@@ -190,6 +204,7 @@ export default function TownHeatMap({
   function pickType(type) {
     setBlocks(null);
     setHoverBlock(null);
+    setPinnedBlock(null);
     setActiveType(type);
   }
   const info = townMap[selected];
@@ -197,8 +212,22 @@ export default function TownHeatMap({
   function openBlocks(name) {
     setBlocks(null);
     setHoverBlock(null);
+    setPinnedBlock(null);
     setSelected(name);
     setView('blocks');
+  }
+
+  async function toggleSave() {
+    setSaving(true);
+    setError('');
+    try {
+      if (savedKeys.has(keyOf(pinnedBlock))) await onUnsaveBlock(keyOf(pinnedBlock));
+      else await onSaveBlock(pinnedBlock, selected, activeType);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
   }
 
   function onEachTown(feature, layer) {
@@ -294,7 +323,16 @@ export default function TownHeatMap({
         </div>
 
         <div className="map-frame">
-          {view === 'blocks' && hoverBlock && <BlockCard block={hoverBlock} />}
+          {view === 'blocks' && shownBlock && (
+            <BlockCard
+              block={shownBlock}
+              pinned={shownBlock === pinnedBlock}
+              saved={savedKeys?.has(keyOf(shownBlock))}
+              saving={saving}
+              onToggleSave={onSaveBlock && toggleSave}
+              onClose={() => setPinnedBlock(null)}
+            />
+          )}
           {boundaries && (
             <MapContainer center={[1.3521, 103.8198]} zoom={11} minZoom={11} maxZoom={18} scrollWheelZoom className="map">
               <TileLayer url="https://www.onemap.gov.sg/maps/tiles/Grey/{z}/{x}/{y}.png" attribution={ONEMAP_ATTRIBUTION} />
@@ -317,8 +355,8 @@ export default function TownHeatMap({
               )}
 
               {/* Lines from the hovered block to its nearest MRT and bus stop, drawn under the block dots */}
-              {view === 'blocks' && hoverBlock?.nearest_mrt && (
-                <NearestLines block={hoverBlock} />
+              {view === 'blocks' && shownBlock?.nearest_mrt && (
+                <NearestLines block={shownBlock} />
               )}
 
               {view === 'blocks' && blocks?.blocks.map((b) => (
@@ -326,11 +364,17 @@ export default function TownHeatMap({
                   key={`${b.block} ${b.street}`}
                   center={[b.lat, b.lng]}
                   radius={6 + Math.min(b.transactions, 6)}
-                  pathOptions={{ color: '#ffffff', weight: 1, fillColor: blockColor(b.median_price, budget), fillOpacity: 0.9 }}
+                  // Saved and pinned blocks get a dark outline
+                  pathOptions={{
+                    color: b === pinnedBlock || savedKeys?.has(keyOf(b)) ? '#1f1a1a' : '#ffffff',
+                    weight: b === pinnedBlock ? 4 : savedKeys?.has(keyOf(b)) ? 3 : 1,
+                    fillColor: blockColor(b.median_price, budget),
+                    fillOpacity: 0.9,
+                  }}
                   eventHandlers={{
                     mouseover: () => setHoverBlock(b),
                     mouseout: () => setHoverBlock(null),
-                    click: () => setHoverBlock(b), // touch screens have no hover
+                    click: () => setPinnedBlock(b), // also how touch screens see the details
                   }}
                 />
               ))}
@@ -357,7 +401,7 @@ export default function TownHeatMap({
               {blocks.blocks.length < blocks.total
                 ? `Showing ${blocks.blocks.length} of ${blocks.total} blocks (the rest are still being located)`
                 : `${blocks.total} blocks · bigger dots had more sales`}
-              {' · hover a block to see its nearest MRT and bus stop'}
+              {' · hover a block for its nearest MRT and bus stop, click to pin it'}{savedKeys && ' and save it (saved: dark outline)'}
             </span>
           )}
         </div>
