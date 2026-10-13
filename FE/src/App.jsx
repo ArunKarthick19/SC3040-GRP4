@@ -1,20 +1,24 @@
-import { useEffect, useState } from 'react';
-import { Routes, Route, Link, Navigate } from 'react-router-dom';
-import { supabase } from './supabaseClient';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import ForgotPassword from './pages/ForgotPassword';
-import ChooseRole from './pages/ChooseRole';
-import ComingSoon from './pages/ComingSoon';
-import BuyerPage from './pages/BuyerPage';
-import Logo from './components/Logo';
-import Navbar from './components/Navbar';
-import { BuyIcon, SellIcon } from './components/icons';
+import { useEffect, useState } from "react";
+import { Routes, Route, Link, Navigate } from "react-router-dom";
+import { supabase } from "./supabaseClient";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
+import ChooseRole from "./pages/ChooseRole";
+import BuyerPage from "./pages/BuyerPage";
+import SellerPage from "./pages/SellerPage";
+import Logo from "./components/Logo";
+import Navbar from "./components/Navbar";
+import { BuyIcon, SellIcon } from "./components/icons";
 
 function FeatureAction({ session, children }) {
   // Buyer and seller flows aren't built yet, so signed-in users see a placeholder
   if (session) return <button disabled>Coming soon</button>;
-  return <Link to="/signup" className="btn">{children}</Link>;
+  return (
+    <Link to="/signup" className="btn">
+      {children}
+    </Link>
+  );
 }
 
 function Home({ session }) {
@@ -30,22 +34,36 @@ function Home({ session }) {
             <div>
               <span className="eyebrow">Built for Singapore HDB flats</span>
               {session ? (
-                <h1>Welcome back{name ? `, ${name}` : ''}. <span className="accent">What's next?</span></h1>
+                <h1>
+                  Welcome back{name ? `, ${name}` : ""}.{" "}
+                  <span className="accent">What's next?</span>
+                </h1>
               ) : (
-                <h1>Buy or sell your HDB flat, <span className="accent">with clarity.</span></h1>
+                <h1>
+                  Buy or sell your HDB flat,{" "}
+                  <span className="accent">with clarity.</span>
+                </h1>
               )}
               <p className="hero-lead">
-                Tell us your savings and CPF to see which towns, flat types and loan amounts fit your budget.
-                Selling? Enter your flat details and photos for a valuation that reflects your flat's real condition.
+                Tell us your savings and CPF to see which towns, flat types and
+                loan amounts fit your budget. Selling? Enter your flat details
+                and photos for a valuation that reflects your flat's real
+                condition.
               </p>
               {session ? (
                 <div className="hero-ctas">
-                  <Link to="/start" className="btn btn-lg">Buy or sell a flat</Link>
+                  <Link to="/start" className="btn btn-lg">
+                    Buy or sell a flat
+                  </Link>
                 </div>
               ) : (
                 <div className="hero-ctas">
-                  <Link to="/signup" className="btn btn-lg">I'm buying</Link>
-                  <Link to="/signup" className="btn btn-lg btn-outline">I'm selling</Link>
+                  <Link to="/signup" className="btn btn-lg">
+                    I'm buying
+                  </Link>
+                  <Link to="/signup" className="btn btn-lg btn-outline">
+                    I'm selling
+                  </Link>
                 </div>
               )}
             </div>
@@ -56,14 +74,28 @@ function Home({ session }) {
                 <span className="tag">4-Room · Tampines</span>
               </div>
               <div className="preview-price">$612,000</div>
-              <div className="preview-sub">Estimated resale value · 92 years lease left</div>
+              <div className="preview-sub">
+                Estimated resale value · 92 years lease left
+              </div>
               <div className="photo-grid">
-                <span /><span /><span /><span /><span /><span />
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
               </div>
               <ul className="stat-list">
-                <li>Base valuation <strong>$598,000</strong></li>
-                <li>Condition from 6 photos <span className="tag tag-success">Well kept</span></li>
-                <li>Condition adjustment <strong className="up">+$14,000</strong></li>
+                <li>
+                  Base valuation <strong>$598,000</strong>
+                </li>
+                <li>
+                  Condition from 6 photos{" "}
+                  <span className="tag tag-success">Well kept</span>
+                </li>
+                <li>
+                  Condition adjustment <strong className="up">+$14,000</strong>
+                </li>
               </ul>
             </div>
           </div>
@@ -73,32 +105,50 @@ function Home({ session }) {
           <div className="container">
             <div className="section-head">
               <h2>One place for both sides of the move</h2>
-              <p>Whether you're getting your first flat or moving on from your current one, Flaty does the maths for you.</p>
+              <p>
+                Whether you're getting your first flat or moving on from your
+                current one, Flaty does the maths for you.
+              </p>
             </div>
 
             <div className="feature-grid">
               <article className="feature-card">
                 <div className="feature-icon">{BuyIcon}</div>
                 <h3>For buyers</h3>
-                <p>Find out what you can afford before you start viewing flats.</p>
+                <p>
+                  Find out what you can afford before you start viewing flats.
+                </p>
                 <ul className="check-list">
-                  <li>Enter your cash savings, CPF balance and preferred flat type</li>
+                  <li>
+                    Enter your cash savings, CPF balance and preferred flat type
+                  </li>
                   <li>See which towns and locations match your budget</li>
                   <li>Get an estimate of how much you can borrow</li>
-                  <li>Find out which flat types (3-room, 4-room, 5-room…) you can buy</li>
+                  <li>
+                    Find out which flat types (3-room, 4-room, 5-room…) you can
+                    buy
+                  </li>
                 </ul>
-                <FeatureAction session={session}>Get recommendations</FeatureAction>
+                <FeatureAction session={session}>
+                  Get recommendations
+                </FeatureAction>
               </article>
 
               <article className="feature-card highlight">
                 <div className="feature-icon">{SellIcon}</div>
                 <h3>For sellers</h3>
-                <p>Find out what your flat is worth, with its condition taken into account.</p>
+                <p>
+                  Find out what your flat is worth, with its condition taken
+                  into account.
+                </p>
                 <ul className="check-list">
                   <li>Enter your flat type, lease type and remaining lease</li>
                   <li>Upload up to 6 photos of your home</li>
                   <li>Get an estimated resale value for your flat</li>
-                  <li>The estimate is adjusted for the condition shown in your photos</li>
+                  <li>
+                    The estimate is adjusted for the condition shown in your
+                    photos
+                  </li>
                 </ul>
                 <FeatureAction session={session}>Value my flat</FeatureAction>
               </article>
@@ -115,15 +165,24 @@ function Home({ session }) {
             <ol className="steps">
               <li>
                 <h3>Tell us about you</h3>
-                <p>Buyers share their savings, CPF and preferred flat type. Sellers enter their flat's details.</p>
+                <p>
+                  Buyers share their savings, CPF and preferred flat type.
+                  Sellers enter their flat's details.
+                </p>
               </li>
               <li>
                 <h3>Add photos</h3>
-                <p>Sellers upload up to 6 photos so Flaty can assess the condition of the flat.</p>
+                <p>
+                  Sellers upload up to 6 photos so Flaty can assess the
+                  condition of the flat.
+                </p>
               </li>
               <li>
                 <h3>Get your answer</h3>
-                <p>See recommended locations and a loan estimate, or a valuation adjusted for condition.</p>
+                <p>
+                  See recommended locations and a loan estimate, or a valuation
+                  adjusted for condition.
+                </p>
               </li>
             </ol>
           </div>
@@ -135,7 +194,9 @@ function Home({ session }) {
               <div className="cta-band">
                 <h2>Ready to plan your next move?</h2>
                 <p>Create a free account to get started.</p>
-                <Link to="/signup" className="btn btn-lg">Create an account</Link>
+                <Link to="/signup" className="btn btn-lg">
+                  Create an account
+                </Link>
               </div>
             </div>
           </section>
@@ -165,7 +226,9 @@ export default function App() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
     return () => subscription.unsubscribe();
@@ -177,9 +240,30 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/start" element={<RequireAuth session={session}><ChooseRole session={session} /></RequireAuth>} />
-      <Route path="/buy" element={<RequireAuth session={session}><BuyerPage session={session} /></RequireAuth>} />
-      <Route path="/sell" element={<RequireAuth session={session}><ComingSoon session={session} title="Flat valuation" /></RequireAuth>} />
+      <Route
+        path="/start"
+        element={
+          <RequireAuth session={session}>
+            <ChooseRole session={session} />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/buy"
+        element={
+          <RequireAuth session={session}>
+            <BuyerPage session={session} />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/sell"
+        element={
+          <RequireAuth session={session}>
+            <SellerPage session={session} />
+          </RequireAuth>
+        }
+      />
     </Routes>
   );
 }
