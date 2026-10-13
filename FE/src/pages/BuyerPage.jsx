@@ -46,7 +46,7 @@ function LoanCard({ title, loan, highlight }) {
 
 const titleCase = (s) => s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 
-function Locations({ locations, flatType, budget, year, onSelect }) {
+function Locations({ locations, flatType, budget, onSelect }) {
   if (locations === null) {
     return (
       <p className="muted">
@@ -57,16 +57,16 @@ function Locations({ locations, flatType, budget, year, onSelect }) {
   if (locations.length === 0) {
     return (
       <p className="muted">
-        Fewer than 1 in 10 {flatType.toLowerCase()} flats sold in {year} in any town were within {money(budget)}.
-        Try a smaller flat type.
+        At current market prices, fewer than 1 in 10 {flatType.toLowerCase()} flats in any town are within{' '}
+        {money(budget)}. Try a smaller flat type.
       </p>
     );
   }
   return (
     <>
       <p className="muted">
-        Based on {flatType.toLowerCase()} resale flats sold in {year}. Towns where more of the flats sold were
-        within your budget are listed first. Click a town to see it on the map.
+        Based on current market prices for {flatType.toLowerCase()} resale flats. Towns where more flats are within
+        your budget are listed first. Click a town to see it on the map.
       </p>
       <ul className="town-list">
         {locations.map((loc) => (
@@ -78,8 +78,8 @@ function Locations({ locations, flatType, budget, year, onSelect }) {
               </span>
               <span className="town-bar"><span style={{ width: `${loc.share_within_budget * 100}%` }} /></span>
               <span className="town-meta">
-                Median {money(loc.estimated_price)} · ~{loc.typical_floor_area} sqm · ~{loc.typical_remaining_lease} yrs
-                lease left · {loc.transactions} sales
+                Typical price {money(loc.estimated_price)} · ~{loc.typical_floor_area} sqm · ~{loc.typical_remaining_lease} yrs
+                lease left · {loc.transactions} flats compared
               </span>
             </button>
           </li>
@@ -378,7 +378,7 @@ export default function BuyerPage({ session }) {
                         </div>
                       )}
                     </div>
-                    <Locations locations={result.locations} flatType={result.flatType} budget={result.budget} year={result.locations_year} onSelect={selectTown} />
+                    <Locations locations={result.locations} flatType={result.flatType} budget={result.budget} onSelect={selectTown} />
                   </div>
                   <p className="fine-print">
                     Estimates only. Bank loan assumes a 3.0% interest rate; your eligibility is assessed at the
@@ -408,7 +408,6 @@ export default function BuyerPage({ session }) {
           townMaps={result.town_maps}
           flatTypeOptions={mapSuggest ? suggestions?.options : undefined}
           modelInfo={result.price_model}
-          year={result.locations_year}
           savedKeys={savedKeys}
           onSaveBlock={addBookmark}
           onUnsaveBlock={removeBookmarkByKey}

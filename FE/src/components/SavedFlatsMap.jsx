@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, CircleMarker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { ONEMAP_ATTRIBUTION, distance } from '../mrtLines';
+import { ONEMAP_ATTRIBUTION, cbdDistance, distance } from '../mrtLines';
 import { BlockCard, NearestLines } from './TownHeatMap';
 
 const titleCase = (s) => s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
@@ -79,7 +79,7 @@ export default function SavedFlatsMap({ bookmarks, focusId, onRemove, onClose })
             {shown && (
               <BlockCard
                 block={shown}
-                subtitle={`${titleCase(shown.town)} · ${shown.flat_type.toLowerCase()}${shown.data_year ? ` · ${shown.data_year} sales` : ''}`}
+                subtitle={`${titleCase(shown.town)} · ${shown.flat_type.toLowerCase()}`}
                 pinned={shown === pinned}
                 saved
                 saving={removing}
@@ -127,8 +127,9 @@ export default function SavedFlatsMap({ bookmarks, focusId, onRemove, onClose })
                 >
                   <strong>Blk {f.block} {titleCase(f.street)}</strong>
                   <span className="muted">{titleCase(f.town)} · {f.flat_type.toLowerCase()}</span>
-                  {f.median_price && <span className="muted">Median {money(f.median_price)}</span>}
+                  {f.median_price && <span className="muted">Typical price {money(f.median_price)}</span>}
                   {f.nearest_mrt && <span className="muted">{f.nearest_mrt.name} {distance(f.nearest_mrt.distance_m)}</span>}
+                  <span className="muted">CBD {distance(cbdDistance(f.lat, f.lng))}</span>
                 </button>
               </li>
             ))}

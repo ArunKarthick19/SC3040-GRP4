@@ -1405,6 +1405,14 @@ form button[type='submit'] {
   border-radius: 2px;
 }
 
+.map-hover-swatch-cbd {
+  height: 10px;
+  margin-top: 4px;
+  border: 2px solid var(--ink);
+  border-radius: 2px;
+  background: transparent;
+}
+
 .map-hover-swatch-bus {
   background: repeating-linear-gradient(90deg, #1f1a1a 0 3px, transparent 3px 6px);
 }

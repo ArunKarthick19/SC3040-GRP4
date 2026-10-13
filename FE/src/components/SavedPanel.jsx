@@ -1,4 +1,4 @@
-import { distance } from '../mrtLines';
+import { cbdDistance, distance } from '../mrtLines';
 
 const money = (n) => `$${Math.round(n).toLocaleString('en-SG')}`;
 const titleCase = (s) => s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
@@ -27,12 +27,12 @@ export default function SavedPanel({
                   <strong>Blk {b.block} {titleCase(b.street)}</strong>
                   <span className="muted">
                     {titleCase(b.town)} · {b.flat_type.toLowerCase()}
-                    {b.median_price && ` · median ${money(b.median_price)}`}
-                    {b.data_year && ` (${b.data_year})`}
+                    {b.median_price && ` · typical price ${money(b.median_price)}`}
                   </span>
                   {b.nearest_mrt && (
                     <span className="muted">
                       {b.nearest_mrt.name} {distance(b.nearest_mrt.distance_m)} · bus stop {distance(b.nearest_bus.distance_m)}
+                      {b.lat != null && ` · CBD ${distance(cbdDistance(b.lat, b.lng))}`}
                     </span>
                   )}
                 </div>

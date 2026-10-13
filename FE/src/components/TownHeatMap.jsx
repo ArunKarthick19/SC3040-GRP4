@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, CircleMarker, Polyline, Tooltip, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { ONEMAP_ATTRIBUTION, distance, lineColor } from '../mrtLines';
+import { ONEMAP_ATTRIBUTION, cbdDistance, distance, lineColor } from '../mrtLines';
 import { blockKey } from '../saves';
 
 const COLORS = { good: '#2f9e6b', ok: '#f0b429', bad: '#e6564c', none: '#d9d4d3' };
@@ -58,7 +58,7 @@ export function BlockCard({ block, subtitle, pinned, saved, saving, onToggleSave
       </div>
       {subtitle && <span className="muted">{subtitle}</span>}
       <span className="muted">
-        Median {money(block.median_price)} · {block.transactions} sale{block.transactions > 1 ? 's' : ''}
+        Typical price {money(block.median_price)} · {block.transactions} flat{block.transactions > 1 ? 's' : ''} compared
       </span>
       {mrt && (
         <ul>
@@ -74,6 +74,13 @@ export function BlockCard({ block, subtitle, pinned, saved, saving, onToggleSave
             <span>
               Bus stop {bus.code}{bus.road && ` · ${bus.road}`}<br />
               <strong>{distance(bus.distance_m)}</strong> · ~{bus.walk_min} min walk
+            </span>
+          </li>
+          <li>
+            <span className="map-hover-swatch map-hover-swatch-cbd" />
+            <span>
+              CBD (Raffles Place)<br />
+              <strong>{distance(cbdDistance(block.lat, block.lng))}</strong> straight-line
             </span>
           </li>
         </ul>
@@ -132,8 +139,8 @@ export function NearestLines({ block }) {
 
 function Legend({ view }) {
   const items = view === 'island'
-    ? [[COLORS.good, '50%+ of sales in budget'], [COLORS.ok, '20–49%'], [COLORS.bad, 'Under 20%'], [COLORS.none, 'No sales of this flat type']]
-    : [[COLORS.good, 'Median within budget'], [COLORS.ok, 'Up to 10% over'], [COLORS.bad, 'More than 10% over']];
+    ? [[COLORS.good, '50%+ of flats in budget'], [COLORS.ok, '20–49%'], [COLORS.bad, 'Under 20%'], [COLORS.none, 'No flats of this type']]
+    : [[COLORS.good, 'Typical price within budget'], [COLORS.ok, 'Up to 10% over'], [COLORS.bad, 'More than 10% over']];
   return (
     <ul className="map-legend">
       {items.map(([color, label]) => (
@@ -147,7 +154,7 @@ function Legend({ view }) {
 // modelInfo (optional): price model accuracy, shown as a note on where the suggestions come from.
 // savedKeys / onSaveBlock / onUnsaveBlock (optional): bookmarking blocks; savedKeys is a Set of blockKey()s.
 export default function TownHeatMap({
-  town, flatType, budget, townMap: chosenTownMap, townMaps, flatTypeOptions, modelInfo, year, onClose,
+  town, flatType, budget, townMap: chosenTownMap, townMaps, flatTypeOptions, modelInfo, onClose,
   savedKeys, onSaveBlock, onUnsaveBlock,
 }) {
   const [boundaries, setBoundaries] = useState(null);
@@ -233,8 +240,8 @@ export default function TownHeatMap({
   function onEachTown(feature, layer) {
     const t = townMap[feature.properties.town];
     const label = t
-      ? `<strong>${titleCase(t.town)}</strong><br/>${Math.round(t.share_within_budget * 100)}% in budget · median ${money(t.estimated_price)}<br/><em>Click to see blocks</em>`
-      : `<strong>${titleCase(feature.properties.area)}</strong><br/>No ${activeType.toLowerCase()} sales in ${year}`;
+      ? `<strong>${titleCase(t.town)}</strong><br/>${Math.round(t.share_within_budget * 100)}% in budget · typical price ${money(t.estimated_price)}<br/><em>Click to see blocks</em>`
+      : `<strong>${titleCase(feature.properties.area)}</strong><br/>No ${activeType.toLowerCase()} flats in this area`;
     layer.bindTooltip(label, { sticky: true });
     if (t) layer.on('click', () => openBlocks(t.town));
   }
@@ -263,8 +270,8 @@ export default function TownHeatMap({
             </h3>
             <p className="muted">
               {view === 'island'
-                ? `Coloured by how many ${year} sales were within your ${money(budget)} budget. Click a town to see its blocks.`
-                : `${activeType.toLowerCase()} blocks sold in ${year}, coloured by median price against your ${money(budget)} budget.`}
+                ? `Coloured by how many flats are within your ${money(budget)} budget at current market prices. Click a town to see its blocks.`
+                : `${activeType.toLowerCase()} blocks, coloured by typical price against your ${money(budget)} budget.`}
             </p>
           </div>
           <div className="map-actions">
@@ -400,7 +407,7 @@ export default function TownHeatMap({
             <span className="muted">
               {blocks.blocks.length < blocks.total
                 ? `Showing ${blocks.blocks.length} of ${blocks.total} blocks (the rest are still being located)`
-                : `${blocks.total} blocks · bigger dots had more sales`}
+                : `${blocks.total} blocks · bigger dots: more flats compared`}
               {' · hover a block for its nearest MRT and bus stop, click to pin it'}{savedKeys && ' and save it (saved: dark outline)'}
             </span>
           )}
