@@ -11,11 +11,10 @@ import Logo from "./components/Logo";
 import Navbar from "./components/Navbar";
 import { BuyIcon, SellIcon } from "./components/icons";
 
-function FeatureAction({ session, children }) {
-  // Buyer and seller flows aren't built yet, so signed-in users see a placeholder
-  if (session) return <button disabled>Coming soon</button>;
+function FeatureAction({ session, to, children }) {
+  // Signed-in users go straight to the tool; everyone else signs up first
   return (
-    <Link to="/signup" className="btn">
+    <Link to={session ? to : "/signup"} className="btn">
       {children}
     </Link>
   );
@@ -129,7 +128,7 @@ function Home({ session }) {
                     buy
                   </li>
                 </ul>
-                <FeatureAction session={session}>
+                <FeatureAction session={session} to="/buy">
                   Get recommendations
                 </FeatureAction>
               </article>
@@ -150,7 +149,9 @@ function Home({ session }) {
                     photos
                   </li>
                 </ul>
-                <FeatureAction session={session}>Value my flat</FeatureAction>
+                <FeatureAction session={session} to="/sell">
+                  Value my flat
+                </FeatureAction>
               </article>
             </div>
           </div>
