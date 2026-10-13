@@ -58,6 +58,7 @@ export default function SellerPage({ session }) {
   const [options, setOptions] = useState(null);
   const [optionsError, setOptionsError] = useState("");
   const resultsRef = useRef(null);
+  const photoInputRef = useRef(null);
   const broadEstimate = result?.match_level === "town_flat_type";
   const aiCompleted = result?.ai_status === "completed";
 
@@ -78,6 +79,12 @@ export default function SellerPage({ session }) {
 
   const update = (field) => (e) =>
     setForm({ ...form, [field]: e.target.value });
+
+  function clearPhotos() {
+    setPhotos([]);
+    setError("");
+    if (photoInputRef.current) photoInputRef.current.value = "";
+  }
 
   function handlePhotos(e) {
     setError("");
@@ -150,7 +157,7 @@ export default function SellerPage({ session }) {
             <form className="panel buyer-form seller-form" onSubmit={handleSubmit}>
               <div>
                 <label>
-                  Town
+                  <span>Town <span className="required-mark" aria-hidden="true">*</span></span>
                   <select value={form.town} onChange={update("town")} required disabled={!options}>
                     <option value="">{options ? "Choose a town" : "Loading towns..."}</option>
                     {options?.towns.map((town) => (
@@ -161,7 +168,7 @@ export default function SellerPage({ session }) {
               </div>
               <div>
                 <label>
-                  Block
+                  <span>Block <span className="required-mark" aria-hidden="true">*</span></span>
                   <input
                     type="text"
                     value={form.block}
@@ -173,7 +180,7 @@ export default function SellerPage({ session }) {
               </div>
               <div>
                 <label>
-                  Street name
+                  <span>Street name <span className="required-mark" aria-hidden="true">*</span></span>
                   <input
                     type="text"
                     value={form.street}
@@ -185,20 +192,21 @@ export default function SellerPage({ session }) {
               </div>
               <div>
                 <label>
-                  Postal code (optional)
+                  <span>Postal code <span className="required-mark" aria-hidden="true">*</span></span>
                   <input
                     type="text"
                     value={form.postal_code}
                     onChange={update("postal_code")}
                     placeholder="530999"
                     pattern="[0-9]{6}"
+                    required
                   />
                 </label>
               </div>
               <div>
                 <label>
-                  Flat type
-                  <select value={form.flat_type} onChange={update("flat_type")}>
+                  <span>Flat type <span className="required-mark" aria-hidden="true">*</span></span>
+                  <select value={form.flat_type} onChange={update("flat_type")} required>
                     {FLAT_TYPES.map((t) => (
                       <option key={t} value={t}>
                         {t.charAt(0) + t.slice(1).toLowerCase()}
@@ -209,7 +217,7 @@ export default function SellerPage({ session }) {
               </div>
               <div>
                 <label>
-                  Floor area (sqm)
+                  <span>Floor area (sqm) <span className="required-mark" aria-hidden="true">*</span></span>
                   <input
                     type="number"
                     min="1"
@@ -224,7 +232,7 @@ export default function SellerPage({ session }) {
               </div>
               <div>
                 <label>
-                  Remaining lease (years)
+                  <span>Remaining lease (years) <span className="required-mark" aria-hidden="true">*</span></span>
                   <input
                     type="number"
                     min="1"
@@ -239,7 +247,7 @@ export default function SellerPage({ session }) {
               </div>
               <div>
                 <label>
-                  Storey
+                  <span>Storey <span className="required-mark" aria-hidden="true">*</span></span>
                   <input
                     type="number"
                     min="1"
@@ -253,9 +261,10 @@ export default function SellerPage({ session }) {
               </div>
               <div className="field-wide">
                 <label>
-                  Photos of your flat (optional, up to 6)
+                  Photos of your flat (Up to 6)
                   <input
                     type="file"
+                    ref={photoInputRef}
                     accept="image/jpeg,image/png,image/webp"
                     multiple
                     onChange={handlePhotos}
@@ -266,9 +275,14 @@ export default function SellerPage({ session }) {
                   JPEG, PNG or WebP; up to 4 MB each and 12 MB total.
                 </p>
                 {photos.length > 0 && (
-                  <p className="muted">
-                    {photos.length} photo{photos.length > 1 ? "s" : ""} selected
-                  </p>
+                  <div className="photo-selection">
+                    <span className="muted">
+                      {photos.length} photo{photos.length > 1 ? "s" : ""} selected
+                    </span>
+                    <button type="button" className="btn-outline" onClick={clearPhotos} disabled={loading}>
+                      Clear photos
+                    </button>
+                  </div>
                 )}
               </div>
               <div className="buyer-form-actions">

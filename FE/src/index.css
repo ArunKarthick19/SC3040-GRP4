@@ -618,6 +618,19 @@ form button[type='submit'] {
   margin-bottom: 0;
 }
 
+.seller-form .required-mark {
+  color: #aaa19f;
+  font-weight: 500;
+}
+
+.seller-form .photo-selection {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
 /* Native macOS selects ignore padding; give seller controls a shared height. */
 .seller-form input:not([type='file']),
 .seller-form select {
