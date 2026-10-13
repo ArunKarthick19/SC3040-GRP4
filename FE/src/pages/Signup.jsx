@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { logEvent } from '../audit';
 import Logo from '../components/Logo';
+import PasswordInput from '../components/PasswordInput';
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -79,13 +80,13 @@ export default function Signup() {
           <div>
             <label>
               Password
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+              <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
             </label>
           </div>
           <div>
             <label>
               Re-enter password
-              <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} />
+              <PasswordInput value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} />
             </label>
           </div>
           {error && <p className="alert alert-error">{error}</p>}

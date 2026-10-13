@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import Navbar from '../components/Navbar';
 import { logEvent } from '../audit';
+import PasswordInput from '../components/PasswordInput';
 
 // Name and username: the name lives in the account's metadata; the username is also in public.profiles,
 // which is what logging in by username looks up
@@ -160,8 +161,7 @@ function PasswordForm({ user }) {
       <div>
         <label>
           Current password
-          <input
-            type="password"
+          <PasswordInput
             value={current}
             onChange={(e) => setCurrent(e.target.value)}
             required
@@ -173,13 +173,13 @@ function PasswordForm({ user }) {
       <div>
         <label>
           New password
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} autoComplete="new-password" />
+          <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} autoComplete="new-password" />
         </label>
       </div>
       <div>
         <label>
           Re-enter new password
-          <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} autoComplete="new-password" />
+          <PasswordInput value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} autoComplete="new-password" />
         </label>
       </div>
       {error && <p className="alert alert-error">{error}</p>}

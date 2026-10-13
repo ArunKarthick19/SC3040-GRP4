@@ -200,6 +200,46 @@ form button[type='submit'] {
   padding: 14px 22px;
 }
 
+/* Password box with a show/hide eye button inside it */
+.password-field {
+  position: relative;
+  display: block;
+}
+
+.password-field input {
+  padding-right: 48px;
+}
+
+/* Edge adds its own reveal eye; ours replaces it */
+.password-field input::-ms-reveal,
+.password-field input::-ms-clear {
+  display: none;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  padding: 8px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--ink-muted);
+  background: transparent;
+  box-shadow: none;
+  transform: translateY(-50%);
+}
+
+.password-toggle:hover {
+  color: var(--brand);
+  background: var(--brand-soft);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.password-toggle:active {
+  transform: translateY(-50%);
+}
+
 /* ---------- Layout ---------- */
 
 .container {
@@ -351,6 +391,105 @@ form button[type='submit'] {
   flex: 1;
   width: auto;
   margin-top: 0;
+}
+
+
+
+.paywall {
+  max-width: 440px;
+  text-align: center;
+  align-items: center;
+}
+
+.paywall h3 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.paywall p {
+  margin: 0;
+}
+
+.paywall .check-list {
+  margin: 0;
+  text-align: left;
+}
+
+.paywall-badge {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(120deg, #7c5cff, #c35bd8 55%, var(--brand));
+}
+
+.paywall-price strong {
+  font-size: 40px;
+  font-weight: 800;
+}
+
+.paywall-strike {
+  margin-left: 8px;
+  color: var(--ink-muted);
+  text-decoration: line-through;
+}
+
+.paywall-cta {
+  width: 100%;
+  padding: 14px 22px;
+}
+
+.paywall-card {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+}
+
+.paywall-card .paywall-badge {
+  justify-self: center;
+}
+
+.paywall-card h3 {
+  text-align: center;
+}
+
+.paywall-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1.2fr;
+  gap: 10px;
+}
+
+.paywall-gotcha {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+}
+
+.paywall-emoji {
+  font-size: 56px;
+  animation: paywall-pop 0.5s ease-out;
+}
+
+@keyframes paywall-pop {
+  from { transform: scale(0.3) rotate(-20deg); }
+  to { transform: scale(1) rotate(0); }
+}
+
+.prank-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  z-index: 2000;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--ink);
+  box-shadow: var(--shadow);
+  transform: translateX(-50%);
 }
 
 /* ---------- Admin audit trail ---------- */
