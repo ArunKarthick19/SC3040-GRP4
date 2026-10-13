@@ -9,8 +9,9 @@ export default function ChooseRole({ session }) {
     <>
       <Navbar session={session} />
 
-      <main className="section">
+      <main className="section section-compact">
         <div className="container">
+          <p><Link to="/">← Back</Link></p>
           <div className="section-head">
             <span className="eyebrow">Get started</span>
             <h2>What would you like to do{name ? `, ${name}` : ''}?</h2>
