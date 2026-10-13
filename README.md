@@ -25,6 +25,14 @@ cd BE
 python train_locations.py   # writes models/location_stats.json
 python geocode_blocks.py    # block coordinates for the heat map, ~2 h first time (OneMap rate limit), resumes if stopped
 ```
+
+### Price model (suggested flat types)
+A gradient boosting model (scikit-learn) trained on every resale since 2017 predicts a flat's price from town, flat type, floor area, remaining lease, storey and month. It's tested on the latest 6 months of sales (results in `models/price_model_metrics.json`). Retrain after a new CSV (~1 min):
+```
+cd BE
+python train_price_model.py   # writes models/price_model.joblib
+```
+
 `build_town_boundaries.py` makes `FE/public/sg_towns.geojson` (town outlines for the heat map). Already done; only re-run if URA boundaries change.
 
 ## Supabase setup (auth)

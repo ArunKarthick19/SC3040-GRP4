@@ -6,9 +6,12 @@ the chosen flat type were within the budget.
 """
 
 import json
+import statistics
 from bisect import bisect_right
 from functools import lru_cache
 from pathlib import Path
+
+import price_model
 
 FLAT_TYPES = ["2 ROOM", "3 ROOM", "4 ROOM", "5 ROOM", "EXECUTIVE"]
 
@@ -75,6 +78,70 @@ def recommend_locations(max_price, flat_type):
     ]
     results.sort(key=lambda r: (-r["share_within_budget"], r["estimated_price"]))
     return results
+
+
+@lru_cache(maxsize=None)
+def _all_prices(flat_type):
+    """Sorted prices of every sale of `flat_type` this year, across all towns."""
+    model = _load_model()
+    towns = model["flat_types"].get(flat_type, {}) if model else {}
+    return sorted(p for s in towns.values() for p in s["prices"])
+
+
+def _predicted_fits(max_price, flat_type, towns):
+    """Towns where the price model puts a typical `flat_type` flat within budget.
+
+    A typical flat has the town's median floor area and remaining lease for
+    that type. Returns (towns that fit, cheapest predicted price), or None if
+    the price model hasn't been trained.
+    """
+    candidates = [t for t in towns.values() if t["transactions"] >= MIN_TRANSACTIONS]
+    if not candidates:
+        return [], None
+    prices = price_model.predict_many([
+        {
+            "town": t["town"],
+            "flat_type": flat_type,
+            "floor_area_sqm": t["typical_floor_area"],
+            "remaining_lease": t["typical_remaining_lease"],
+        }
+        for t in candidates
+    ])
+    if prices is None:
+        return None
+    fits = [t["town"] for t, p in zip(candidates, prices) if p <= max_price]
+    return fits, min(prices)
+
+
+def suggest_flat_types(max_price):
+    """How well `max_price` covers each flat type, smallest type first.
+
+    Each item: flat_type, towns (how many towns it fits), share_within_budget
+    (0-1, across all of this year's sales of that type), median_price,
+    typical_floor_area (sqm) and predicted_from (cheapest predicted price for
+    a typical flat, or None). With the price model, a town fits when a typical
+    flat there is predicted to be within budget; without it, when the town
+    would be recommended. Returns None if the location model hasn't been trained.
+    """
+    if _load_model() is None:
+        return None
+
+    suggestions = []
+    for flat_type in FLAT_TYPES:
+        prices = _all_prices(flat_type)
+        if not prices:
+            continue
+        towns = town_affordability(max_price, flat_type)
+        predicted = _predicted_fits(max_price, flat_type, towns)
+        suggestions.append({
+            "flat_type": flat_type,
+            "towns": len(predicted[0]) if predicted else len(recommend_locations(max_price, flat_type)),
+            "share_within_budget": round(bisect_right(prices, max_price) / len(prices), 2),
+            "median_price": round(statistics.median(prices)),
+            "typical_floor_area": round(statistics.median(t["typical_floor_area"] for t in towns.values())),
+            "predicted_from": predicted[1] if predicted else None,
+        })
+    return suggestions
 
 
 def town_blocks(town, flat_type):

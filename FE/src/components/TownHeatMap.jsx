@@ -8,6 +8,18 @@ const COLORS = { good: '#2f9e6b', ok: '#f0b429', bad: '#e6564c', none: '#d9d4d3'
 const money = (n) => `$${Math.round(n).toLocaleString('en-SG')}`;
 const titleCase = (s) => s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 
+// URA's five regions, by HDB town
+const REGIONS = {
+  North: ['SEMBAWANG', 'WOODLANDS', 'YISHUN'],
+  'North-East': ['ANG MO KIO', 'HOUGANG', 'PUNGGOL', 'SENGKANG', 'SERANGOON'],
+  East: ['BEDOK', 'PASIR RIS', 'TAMPINES'],
+  West: ['BUKIT BATOK', 'BUKIT PANJANG', 'CHOA CHU KANG', 'CLEMENTI', 'JURONG EAST', 'JURONG WEST'],
+  Central: [
+    'BISHAN', 'BUKIT MERAH', 'BUKIT TIMAH', 'CENTRAL AREA', 'GEYLANG',
+    'KALLANG/WHAMPOA', 'MARINE PARADE', 'QUEENSTOWN', 'TOA PAYOH',
+  ],
+};
+
 // Town colour: share of this year's sales that were within budget
 function townColor(info) {
   if (!info) return COLORS.none;
@@ -49,12 +61,23 @@ function Legend({ view }) {
   );
 }
 
-export default function TownHeatMap({ town, flatType, budget, townMap, year, onClose }) {
+// flatTypeOptions (optional): flat types to switch between, shown as chips; needs townMaps for each of them.
+// modelInfo (optional): price model accuracy, shown as a note on where the suggestions come from.
+export default function TownHeatMap({
+  town, flatType, budget, townMap: chosenTownMap, townMaps, flatTypeOptions, modelInfo, year, onClose,
+}) {
   const [boundaries, setBoundaries] = useState(null);
   const [selected, setSelected] = useState(town);
   const [view, setView] = useState('island');
   const [blocks, setBlocks] = useState(null);
   const [error, setError] = useState('');
+  const [activeType, setActiveType] = useState(flatType);
+  const [region, setRegion] = useState(null); // zoomed-in region
+  const [hoverRegion, setHoverRegion] = useState(null);
+
+  const townMap = townMaps?.[activeType] ?? chosenTownMap;
+  // Towns to emphasise: the hovered region, else the zoomed one
+  const focusTowns = REGIONS[hoverRegion ?? region];
 
   useEffect(() => {
     fetch('/sg_towns.geojson')
@@ -71,17 +94,28 @@ export default function TownHeatMap({ town, flatType, budget, townMap, year, onC
 
   useEffect(() => {
     if (view !== 'blocks') return;
-    const params = new URLSearchParams({ town: selected, flat_type: flatType });
+    const params = new URLSearchParams({ town: selected, flat_type: activeType });
     fetch(`${import.meta.env.VITE_API_URL}/api/buyer/town-blocks?${params}`)
       .then((res) => res.json())
       .then(setBlocks)
       .catch(() => setError('Could not load blocks for this town.'));
-  }, [view, selected, flatType]);
+  }, [view, selected, activeType]);
 
   const selectedFeatures = useMemo(
     () => boundaries?.features.filter((f) => f.properties.town === selected),
     [boundaries, selected],
   );
+  const regionFeatures = useMemo(
+    () => region && boundaries?.features.filter((f) => REGIONS[region].includes(f.properties.town)),
+    [boundaries, region],
+  );
+  const regionTowns = region ? REGIONS[region].filter((t) => townMap[t]) : [];
+  const regionFits = regionTowns.filter((t) => townMap[t].share_within_budget >= 0.1);
+
+  function pickType(type) {
+    setBlocks(null);
+    setActiveType(type);
+  }
   const info = townMap[selected];
 
   function openBlocks(name) {
@@ -94,18 +128,20 @@ export default function TownHeatMap({ town, flatType, budget, townMap, year, onC
     const t = townMap[feature.properties.town];
     const label = t
       ? `<strong>${titleCase(t.town)}</strong><br/>${Math.round(t.share_within_budget * 100)}% in budget · median ${money(t.estimated_price)}<br/><em>Click to see blocks</em>`
-      : `<strong>${titleCase(feature.properties.area)}</strong><br/>No ${flatType.toLowerCase()} sales in ${year}`;
+      : `<strong>${titleCase(feature.properties.area)}</strong><br/>No ${activeType.toLowerCase()} sales in ${year}`;
     layer.bindTooltip(label, { sticky: true });
     if (t) layer.on('click', () => openBlocks(t.town));
   }
 
   const townStyle = (feature) => {
     const isSelected = feature.properties.town === selected;
+    const inFocus = focusTowns?.includes(feature.properties.town);
     return {
       fillColor: townColor(townMap[feature.properties.town]),
-      fillOpacity: 0.65,
-      color: isSelected ? '#1f1a1a' : '#ffffff',
-      weight: isSelected ? 3 : 1,
+      // Fade towns outside the hovered/zoomed region
+      fillOpacity: focusTowns && !inFocus ? 0.15 : 0.65,
+      color: inFocus && hoverRegion ? '#1f1a1a' : isSelected && !focusTowns ? '#1f1a1a' : '#ffffff',
+      weight: (inFocus && hoverRegion) || (isSelected && !focusTowns) ? 2.5 : 1,
     };
   };
 
@@ -115,12 +151,14 @@ export default function TownHeatMap({ town, flatType, budget, townMap, year, onC
         <div className="map-header">
           <div>
             <h3>
-              {view === 'island' ? `${flatType.toLowerCase()} flats across Singapore` : `${titleCase(selected)} blocks`}
+              {view === 'island'
+                ? `${activeType.toLowerCase()} flats ${region ? `in the ${region}` : 'across Singapore'}`
+                : `${titleCase(selected)} blocks`}
             </h3>
             <p className="muted">
               {view === 'island'
                 ? `Coloured by how many ${year} sales were within your ${money(budget)} budget. Click a town to see its blocks.`
-                : `${flatType.toLowerCase()} blocks sold in ${year}, coloured by median price against your ${money(budget)} budget.`}
+                : `${activeType.toLowerCase()} blocks sold in ${year}, coloured by median price against your ${money(budget)} budget.`}
             </p>
           </div>
           <div className="map-actions">
@@ -131,13 +169,66 @@ export default function TownHeatMap({ town, flatType, budget, townMap, year, onC
 
         {error && <p className="alert alert-error">{error}</p>}
 
+        {flatTypeOptions?.length > 0 && modelInfo && (
+          <p className="model-note">
+            <span aria-hidden="true">✦</span> Flat types suggested by our machine learning price model, trained on{' '}
+            {modelInfo.total_sales.toLocaleString('en-SG')} HDB resale sales since 2017 (typical error {modelInfo.mape}%).
+            A flat type fits a town when a typical flat there is predicted to be within your budget.
+          </p>
+        )}
+
+        <div className="map-toolbar">
+          {flatTypeOptions?.length > 0 && (
+            <div className="chip-group" aria-label="Flat type">
+              {flatTypeOptions.map((s) => (
+                <button
+                  key={s.flat_type}
+                  type="button"
+                  className={`chip${s.flat_type === activeType ? ' chip-active' : ''}`}
+                  onClick={() => pickType(s.flat_type)}
+                >
+                  {s.flat_type.charAt(0) + s.flat_type.slice(1).toLowerCase()}
+                  <span className="chip-count">{s.towns}</span>
+                  {s.labels?.map((label) => <span key={label} className="chip-label">{label}</span>)}
+                </button>
+              ))}
+            </div>
+          )}
+          {view === 'island' && (
+            <div className="chip-group" aria-label="Region" onMouseLeave={() => setHoverRegion(null)}>
+              <button type="button" className={`chip${!region ? ' chip-active' : ''}`} onClick={() => setRegion(null)}>
+                All
+              </button>
+              {Object.keys(REGIONS).map((name) => (
+                <button
+                  key={name}
+                  type="button"
+                  className={`chip${region === name ? ' chip-active' : ''}`}
+                  onMouseEnter={() => setHoverRegion(name)}
+                  onFocus={() => setHoverRegion(name)}
+                  onBlur={() => setHoverRegion(null)}
+                  onClick={() => setRegion(name)}
+                >
+                  {name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         <div className="map-frame">
           {boundaries && (
             <MapContainer center={[1.3521, 103.8198]} zoom={11} minZoom={11} maxZoom={18} scrollWheelZoom className="map">
               <TileLayer url="https://www.onemap.gov.sg/maps/tiles/Grey/{z}/{x}/{y}.png" attribution={ONEMAP_ATTRIBUTION} />
 
               {view === 'island' ? (
-                <GeoJSON key={`island-${selected}`} data={boundaries} style={townStyle} onEachFeature={onEachTown} />
+                // The key forces a redraw, since GeoJSON doesn't re-apply styles or tooltips on its own
+                <GeoJSON
+                  key={`island-${selected}-${activeType}-${region}-${hoverRegion}`}
+                  data={boundaries}
+                  style={townStyle}
+                  onEachFeature={onEachTown}
+                />
               ) : (
                 <GeoJSON
                   key={`outline-${selected}`}
@@ -162,14 +253,20 @@ export default function TownHeatMap({ town, flatType, budget, townMap, year, onC
               ))}
 
               {/* Whole island for comparing towns, zoomed in on the town for its blocks */}
-              <FitTo features={view === 'island' ? boundaries.features : selectedFeatures} />
+              <FitTo features={view === 'island' ? regionFeatures || boundaries.features : selectedFeatures} />
             </MapContainer>
           )}
         </div>
 
         <div className="map-footer">
           <Legend view={view} />
-          {view === 'island' && info && (
+          {view === 'island' && region && (
+            <span className="muted">
+              {regionFits.length} of {regionTowns.length} {region} towns fit your budget
+              {regionFits.length > 0 && `: ${regionFits.map(titleCase).join(', ')}`}
+            </span>
+          )}
+          {view === 'island' && !region && info && (
             <button onClick={() => openBlocks(selected)}>See blocks in {titleCase(selected)}</button>
           )}
           {view === 'blocks' && blocks && (

@@ -36,3 +36,9 @@ typing_extensions==4.16.0
 uvicorn==0.54.0
 websockets==15.0.1
 yarl==1.25.1
+
+joblib==1.6.0
+numpy==2.5.4
+scikit-learn==1.9.1
+scipy==1.18.1
+threadpoolctl==3.7.0

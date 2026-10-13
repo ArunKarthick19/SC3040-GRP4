@@ -5,8 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 import affordability
+import price_model
 from auth import get_current_user
-from recommender import FLAT_TYPES, model_year, recommend_locations, town_affordability, town_blocks
+from recommender import FLAT_TYPES, model_year, recommend_locations, suggest_flat_types, town_affordability, town_blocks
 
 app = FastAPI(title="Flatly API")
 
@@ -54,6 +55,10 @@ def buyer_recommendations(profile: BuyerProfile):
     result["locations"] = recommend_locations(budget, profile.flat_type)
     result["locations_year"] = model_year()
     result["town_map"] = town_affordability(budget, profile.flat_type)
+    result["flat_types"] = suggest_flat_types(budget)
+    result["price_model"] = price_model.metrics()  # accuracy, shown alongside the suggestions
+    # Every flat type's town map, so the suggestions map can switch between them
+    result["town_maps"] = {ft: town_affordability(budget, ft) for ft in FLAT_TYPES}
     return result
 
 

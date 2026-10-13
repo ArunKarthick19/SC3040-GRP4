@@ -1,0 +1,9 @@
+{
+  "train_sales": 230041,
+  "test_sales": 12413,
+  "test_period_months": 6,
+  "mae": 35770,
+  "mape": 5.18,
+  "r2": 0.942,
+  "total_sales": 242454
+}

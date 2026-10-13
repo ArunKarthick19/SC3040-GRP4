@@ -83,6 +83,32 @@ function Locations({ locations, flatType, budget, year, onSelect }) {
   );
 }
 
+const flatTypeName = (t) => t.charAt(0) + t.slice(1).toLowerCase();
+
+const MIN_TOWNS_TO_SUGGEST = 5; // the map opens on the biggest flat type that fits in at least this many towns
+
+// Flat types the budget covers (smallest first), each with labels, plus which one the map should open on.
+// Returns null when no flat type fits.
+function labelSuggestions(flatTypes, preferred) {
+  const fits = flatTypes?.filter((s) => s.towns > 0) ?? [];
+  if (fits.length === 0) return null;
+
+  const mostSpace = fits[fits.length - 1];
+  // On a tie, the bigger flat type wins
+  const mostChoice = fits.reduce((best, s) => (s.towns >= best.towns ? s : best));
+  const start = [...fits].reverse().find((s) => s.towns >= MIN_TOWNS_TO_SUGGEST) ?? mostSpace;
+
+  const options = fits.map((s) => ({
+    ...s,
+    labels: [
+      s === mostSpace && 'Most space',
+      s === mostChoice && 'Most choice',
+      s.flat_type === preferred && 'Your choice',
+    ].filter(Boolean),
+  }));
+  return { options, start: start.flat_type };
+}
+
 export default function BuyerPage({ session }) {
   const [form, setForm] = useState({
     monthly_income: '',
@@ -97,6 +123,8 @@ export default function BuyerPage({ session }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [mapTown, setMapTown] = useState(null);
+  const [mapSuggest, setMapSuggest] = useState(false); // map opened from "Suggested flat types"
+  const [mapType, setMapType] = useState(null); // flat type the map opens on
   const resultsRef = useRef(null);
 
   // Bring the results into view each time new ones arrive
@@ -106,8 +134,7 @@ export default function BuyerPage({ session }) {
 
   const update = (field) => (e) => setForm({ ...form, [field]: e.target.value });
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  async function getResults(values) {
     setError('');
     setLoading(true);
     try {
@@ -115,16 +142,16 @@ export default function BuyerPage({ session }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...form,
-          monthly_income: Number(form.monthly_income),
-          cash_savings: Number(form.cash_savings),
-          cpf_oa: Number(form.cpf_oa),
-          age: Number(form.age),
-          other_debts: Number(form.other_debts || 0),
+          ...values,
+          monthly_income: Number(values.monthly_income),
+          cash_savings: Number(values.cash_savings),
+          cpf_oa: Number(values.cpf_oa),
+          age: Number(values.age),
+          other_debts: Number(values.other_debts || 0),
         }),
       });
       if (!res.ok) throw new Error(`Server returned ${res.status}`);
-      setResult({ ...(await res.json()), flatType: form.flat_type });
+      setResult({ ...(await res.json()), flatType: values.flat_type });
     } catch (err) {
       setError(`Could not get results. Is the backend running? (${err.message})`);
     } finally {
@@ -132,6 +159,33 @@ export default function BuyerPage({ session }) {
     }
   }
 
+  function handleSubmit(e) {
+    e.preventDefault();
+    getResults(form);
+  }
+
+  // Opens the map on the best match, or any town that sold this flat type.
+  // From "Suggested flat types" it opens on the suggested type instead of the user's choice.
+  function openMap(suggest) {
+    setMapSuggest(suggest);
+    if (suggest && suggestions) {
+      const towns = Object.values(result.town_maps[suggestions.start]);
+      const best = towns.sort((a, b) => b.share_within_budget - a.share_within_budget || a.estimated_price - b.estimated_price)[0];
+      setMapType(suggestions.start);
+      setMapTown(best.town);
+      return;
+    }
+    setMapType(result.flatType);
+    setMapTown(result.locations?.[0]?.town ?? Object.keys(result.town_map)[0]);
+  }
+
+  function selectTown(town) {
+    setMapSuggest(false);
+    setMapType(result.flatType);
+    setMapTown(town);
+  }
+
+  const suggestions = labelSuggestions(result?.flat_types, result?.flatType);
   const { hdb_loan: hdb, bank_loan: bank } = result ?? {};
   // Only flag a winner when one loan actually gives a bigger budget
   let best = null;
@@ -191,7 +245,7 @@ export default function BuyerPage({ session }) {
                 <label>
                   Preferred flat type
                   <select value={form.flat_type} onChange={update('flat_type')}>
-                    {FLAT_TYPES.map((t) => <option key={t} value={t}>{t.charAt(0) + t.slice(1).toLowerCase()}</option>)}
+                    {FLAT_TYPES.map((t) => <option key={t} value={t}>{flatTypeName(t)}</option>)}
                   </select>
                 </label>
               </div>
@@ -225,17 +279,19 @@ export default function BuyerPage({ session }) {
                     <div className="panel-head">
                       <h3>Recommended towns</h3>
                       {result.town_map && (
-                        <button
-                          type="button"
-                          className="btn-outline"
-                          // Open on the best match, or any town that sold this flat type
-                          onClick={() => setMapTown(result.locations?.[0]?.town ?? Object.keys(result.town_map)[0])}
-                        >
-                          View map
-                        </button>
+                        <div className="panel-actions">
+                          {suggestions && (
+                            <button type="button" className="btn-ai" onClick={() => openMap(true)}>
+                              <span aria-hidden="true">✦</span> Suggested flat types
+                            </button>
+                          )}
+                          <button type="button" className="btn-outline" onClick={() => openMap(false)}>
+                            View map
+                          </button>
+                        </div>
                       )}
                     </div>
-                    <Locations locations={result.locations} flatType={result.flatType} budget={result.budget} year={result.locations_year} onSelect={setMapTown} />
+                    <Locations locations={result.locations} flatType={result.flatType} budget={result.budget} year={result.locations_year} onSelect={selectTown} />
                   </div>
                   <p className="fine-print">
                     Estimates only. Bank loan assumes a 3.0% interest rate; your eligibility is assessed at the
@@ -251,9 +307,12 @@ export default function BuyerPage({ session }) {
       {mapTown && result?.town_map && (
         <TownHeatMap
           town={mapTown}
-          flatType={result.flatType}
+          flatType={mapType}
           budget={result.budget}
           townMap={result.town_map}
+          townMaps={result.town_maps}
+          flatTypeOptions={mapSuggest ? suggestions?.options : undefined}
+          modelInfo={result.price_model}
           year={result.locations_year}
           onClose={() => setMapTown(null)}
         />
