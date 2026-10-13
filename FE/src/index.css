@@ -353,6 +353,63 @@ form button[type='submit'] {
   margin-top: 0;
 }
 
+/* ---------- Admin audit trail ---------- */
+
+.audit-stats {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.audit-stats .panel {
+  padding: 20px;
+}
+
+.audit-stats .loan-amount {
+  font-size: 32px;
+}
+
+.audit-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.audit-filters label {
+  min-width: 220px;
+}
+
+.audit-table-wrap {
+  margin-top: 12px;
+  overflow-x: auto;
+}
+
+.audit-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.audit-table th,
+.audit-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.audit-table th {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+.audit-table td:first-child {
+  white-space: nowrap;
+}
+
 .field-hint {
   margin: 6px 0 0;
   font-size: 13px;
@@ -1613,6 +1670,10 @@ form button[type='submit'] {
   .profile-layout,
   .steps {
     grid-template-columns: 1fr;
+  }
+
+  .audit-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .buyer-form {

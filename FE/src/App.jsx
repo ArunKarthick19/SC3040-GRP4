@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Routes, Route, Link, Navigate } from "react-router-dom";
+import { Routes, Route, Link, Navigate, useLocation } from "react-router-dom";
 import { supabase } from "./supabaseClient";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -8,6 +8,7 @@ import ChooseRole from "./pages/ChooseRole";
 import BuyerPage from "./pages/BuyerPage";
 import SellerPage from "./pages/SellerPage";
 import ProfilePage from "./pages/ProfilePage";
+import AdminPage from "./pages/AdminPage";
 import Logo from "./components/Logo";
 import Navbar from "./components/Navbar";
 import { BuyIcon, SellIcon } from "./components/icons";
@@ -217,8 +218,10 @@ function Home({ session }) {
 
 // Pages that need a signed-in user; waits for the stored session before redirecting
 function RequireAuth({ session, children }) {
+  const location = useLocation();
   if (session === undefined) return null;
-  if (!session) return <Navigate to="/login" replace />;
+  // Remember the page, so logging in comes back to it
+  if (!session) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   return children;
 }
 
@@ -271,6 +274,14 @@ export default function App() {
         element={
           <RequireAuth session={session}>
             <ProfilePage session={session} />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <RequireAuth session={session}>
+            <AdminPage session={session} />
           </RequireAuth>
         }
       />

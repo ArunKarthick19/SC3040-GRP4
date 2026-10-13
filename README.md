@@ -97,6 +97,9 @@ Backend regression checks:
 BE/venv/bin/python -m unittest discover -s BE/tests -v
 ```
 
+## Supabase setup (audit trail and admin)
+`supabase/audit_setup.sql` (run after `auth_setup.sql`) adds an `audit_log` table and an admin flag. The account whose username is **admin123** is the admin: sign up with username `admin123`, password `admin123` and any email, and it's marked as admin automatically. Only the admin can read the log, at **Profile menu → Audit trail** (`/admin`). Logged events: sign-up, login, logout, buyer searches, saved searches and flats, valuations (with or without photos), and profile and password changes.
+
 ## Supabase setup (auth)
 `supabase/auth_setup.sql` creates a `profiles` table for usernames plus functions for username login and email-free password reset. Run it once in **Supabase → SQL Editor**.
     I type username -> run the find_account_email query through the api -> returns email -> logins email+password

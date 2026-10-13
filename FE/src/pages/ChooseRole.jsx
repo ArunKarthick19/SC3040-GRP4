@@ -16,6 +16,9 @@ export default function ChooseRole({ session }) {
             <span className="eyebrow">Get started</span>
             <h2>What would you like to do{name ? `, ${name}` : ''}?</h2>
             <p>Pick one to continue. You can always come back and switch.</p>
+            {session.user.user_metadata.username?.toLowerCase() === 'admin123' && (
+              <p><Link to="/admin" className="btn btn-outline">Admin: audit trail</Link></p>
+            )}
           </div>
 
           <div className="feature-grid">

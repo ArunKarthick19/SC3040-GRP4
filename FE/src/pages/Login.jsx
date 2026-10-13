@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import { isAdmin, logEvent } from '../audit';
 import Logo from '../components/Logo';
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -39,7 +41,9 @@ export default function Login() {
       setError(error.message);
       return;
     }
-    navigate('/start');
+    logEvent('sign_in', { with: identifier.includes('@') ? 'email' : 'username' });
+    // The admin goes to the audit trail; everyone else back to the page that needed a login, or home
+    navigate((await isAdmin()) ? '/admin' : location.state?.from ?? '/');
   }
 
   return (

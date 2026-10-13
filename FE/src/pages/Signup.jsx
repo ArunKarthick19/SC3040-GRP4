@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import { logEvent } from '../audit';
 import Logo from '../components/Logo';
 
 export default function Signup() {
@@ -50,7 +51,8 @@ export default function Signup() {
     }
     // With "Confirm email" off in Supabase, signUp logs the user in straight away
     if (data.session) {
-      navigate('/start');
+      logEvent('sign_up', { username: trimmedUsername });
+      navigate('/');
       return;
     }
     setMessage('Account created, but email confirmation is still on in Supabase. Turn off "Confirm email" to log in directly.');

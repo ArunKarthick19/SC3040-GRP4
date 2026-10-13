@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { scrollToElement } from "../scroll";
 import { supabase } from "../supabaseClient";
+import { logEvent } from "../audit";
 
 const FLAT_TYPES = ["2 ROOM", "3 ROOM", "4 ROOM", "5 ROOM", "EXECUTIVE"];
 
@@ -128,6 +129,14 @@ export default function SellerPage({ session }) {
         body: JSON.stringify(details),
       });
       setResult(data);
+      logEvent(photos.length ? "valuation_photos" : "valuation", {
+        town: details.town,
+        block: details.block,
+        street: details.street,
+        flat_type: details.flat_type,
+        photos: photos.length,
+        estimate: data.estimated_value ?? data.base_valuation ?? null,
+      });
     } catch (err) {
       setError(`Could not estimate your flat. ${err.message}`);
     } finally {

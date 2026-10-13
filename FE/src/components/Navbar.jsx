@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import { logEvent } from '../audit';
 import Logo from './Logo';
 
 // Profile icon with a menu: who's signed in, a link to edit the profile, and log out
@@ -44,7 +45,20 @@ function ProfileMenu({ user }) {
           <Link to="/profile" className="profile-dropdown-item" role="menuitem" onClick={() => setOpen(false)}>
             Edit profile and password
           </Link>
-          <button type="button" className="profile-dropdown-item" role="menuitem" onClick={() => supabase.auth.signOut()}>
+          {username?.toLowerCase() === 'admin123' && (
+            <Link to="/admin" className="profile-dropdown-item" role="menuitem" onClick={() => setOpen(false)}>
+              Audit trail (admin)
+            </Link>
+          )}
+          <button
+            type="button"
+            className="profile-dropdown-item"
+            role="menuitem"
+            onClick={async () => {
+              await logEvent('sign_out'); // must be recorded while still signed in
+              supabase.auth.signOut();
+            }}
+          >
             Log out
           </button>
         </div>

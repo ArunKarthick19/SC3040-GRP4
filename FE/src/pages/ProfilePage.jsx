@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import Navbar from '../components/Navbar';
+import { logEvent } from '../audit';
 
 // Name and username: the name lives in the account's metadata; the username is also in public.profiles,
 // which is what logging in by username looks up
@@ -51,6 +52,7 @@ function DetailsForm({ user }) {
       // Also updates the session, so the navbar shows the new name straight away
       const { error: updateError } = await supabase.auth.updateUser({ data: { full_name: name, username: newUsername } });
       if (updateError) throw updateError;
+      logEvent('profile_updated', { username: newUsername });
       setMessage('Profile updated.');
     } catch (err) {
       setError(err.message);
@@ -116,6 +118,7 @@ function PasswordForm({ user }) {
       const { error: updateError } = await supabase.auth.updateUser({ password });
       if (updateError) throw updateError;
       close();
+      logEvent('password_changed');
       setMessage('Password changed. Use the new one next time you log in.');
     } catch (err) {
       setError(err.message);

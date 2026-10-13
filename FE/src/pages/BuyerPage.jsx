@@ -6,6 +6,7 @@ import { scrollToElement } from '../scroll';
 import SavedPanel from '../components/SavedPanel';
 import SavedFlatsMap from '../components/SavedFlatsMap';
 import SavedSearchesModal from '../components/SavedSearchesModal';
+import { logEvent } from '../audit';
 import {
   blockKey, deleteBookmark, deleteSearch, listBookmarks, listSearches, saveBookmark, saveSearch,
 } from '../saves';
@@ -174,7 +175,9 @@ export default function BuyerPage({ session }) {
         }),
       });
       if (!res.ok) throw new Error(`Server returned ${res.status}`);
-      setResult({ ...(await res.json()), flatType: values.flat_type });
+      const data = await res.json();
+      setResult({ ...data, flatType: values.flat_type });
+      logEvent('buyer_search', { flat_type: values.flat_type, budget: data.budget });
     } catch (err) {
       setError(`Could not get results. Is the backend running? (${err.message})`);
     } finally {
@@ -202,6 +205,7 @@ export default function BuyerPage({ session }) {
     try {
       const saved = await saveSearch(name, form);
       setSearches([saved, ...searches]);
+      logEvent('search_saved', { name });
       setSaveNote('Search saved. Find it under "Saved" at the bottom of the page.');
     } catch (err) {
       setSaveNote(err.message);
@@ -225,12 +229,14 @@ export default function BuyerPage({ session }) {
   async function addBookmark(block, town, flatType) {
     const saved = await saveBookmark(block, town, flatType, result.locations_year);
     setBookmarks((list) => [saved, ...list]);
+    logEvent('flat_saved', { block: block.block, street: block.street, town, flat_type: flatType });
   }
 
   async function removeBookmark(id) {
     try {
       await deleteBookmark(id);
       setBookmarks((list) => list.filter((b) => b.id !== id));
+      logEvent('flat_removed');
     } catch (err) {
       setSavesError(err.message);
     }
@@ -241,6 +247,7 @@ export default function BuyerPage({ session }) {
     if (!bookmark) return;
     await deleteBookmark(bookmark.id);
     setBookmarks((list) => list.filter((b) => b.id !== bookmark.id));
+    logEvent('flat_removed', { block: bookmark.block, street: bookmark.street });
   }
 
   // Opens the map on the best match, or any town that sold this flat type.
@@ -434,6 +441,7 @@ export default function BuyerPage({ session }) {
           onRemove={async (id) => {
             await deleteBookmark(id);
             setBookmarks((list) => list.filter((b) => b.id !== id));
+            logEvent('flat_removed');
           }}
           onClose={() => setSavedMap(null)}
         />
