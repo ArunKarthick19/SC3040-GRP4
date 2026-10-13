@@ -618,6 +618,11 @@ form button[type='submit'] {
   margin-bottom: 0;
 }
 
+/* A field that takes a whole row, e.g. the seller's photo upload */
+.buyer-form > .field-wide {
+  grid-column: 1 / -1;
+}
+
 .buyer-form-actions {
   grid-column: 1 / -1;
   display: flex;

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { scrollToElement } from "../scroll";
 
 const FLAT_TYPES = ["2 ROOM", "3 ROOM", "4 ROOM", "5 ROOM", "EXECUTIVE"];
 
@@ -28,6 +29,12 @@ export default function SellerPage({ session }) {
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const resultsRef = useRef(null);
+
+  // Bring the valuation into view each time a new one arrives
+  useEffect(() => {
+    if (result && resultsRef.current) scrollToElement(resultsRef.current, 500);
+  }, [result]);
 
   const update = (field) => (e) =>
     setForm({ ...form, [field]: e.target.value });
@@ -59,7 +66,7 @@ export default function SellerPage({ session }) {
     <>
       <Navbar session={session} />
 
-      <main className="section">
+      <main className="section section-compact">
         <div className="container">
           <p>
             <Link to="/start">← Back</Link>
@@ -74,7 +81,7 @@ export default function SellerPage({ session }) {
           </div>
 
           <div className="buyer-layout">
-            <form className="panel" onSubmit={handleSubmit}>
+            <form className="panel buyer-form" onSubmit={handleSubmit}>
               <div>
                 <label>
                   Block
@@ -158,12 +165,12 @@ export default function SellerPage({ session }) {
                     type="text"
                     value={form.storey}
                     onChange={update("storey")}
-                    placeholder=""
+                    placeholder="12"
                     required
                   />
                 </label>
               </div>
-              <div>
+              <div className="field-wide">
                 <label>
                   Photos of your flat (up to 6)
                   <input
@@ -179,10 +186,12 @@ export default function SellerPage({ session }) {
                   </p>
                 )}
               </div>
-              {error && <p className="alert alert-error">{error}</p>}
-              <button type="submit" disabled={loading}>
-                {loading ? "Analysing photos..." : "Value my flat"}
-              </button>
+              <div className="buyer-form-actions">
+                {error && <p className="alert alert-error">{error}</p>}
+                <button type="submit" disabled={loading}>
+                  {loading ? "Analysing photos..." : "Value my flat"}
+                </button>
+              </div>
             </form>
 
             <div className="buyer-results">
@@ -193,7 +202,7 @@ export default function SellerPage({ session }) {
                 </div>
               ) : (
                 <>
-                  <p className="alert alert-success">
+                  <p className="alert alert-success" ref={resultsRef}>
                     Photos uploaded successfully. Valuation ready.
                   </p>
                   <div className="panel budget-panel">
