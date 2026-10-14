@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { PRANK_KEY, PrankContext } from '../premium';
 
+// On by default; only off in a browser where it's been switched off (5 logo clicks)
 const readSaved = () => {
   try {
-    return localStorage.getItem(PRANK_KEY) === 'on';
+    return localStorage.getItem(PRANK_KEY) !== 'off';
   } catch {
-    return false;
+    return true;
   }
 };
 
