@@ -920,13 +920,13 @@ form button[type='submit'] {
   margin-top: 12px;
 }
 
-/* Native macOS selects ignore padding; give seller controls a shared height. */
-.seller-form input:not([type='file']),
-.seller-form select {
+/* Native macOS selects ignore padding; align buyer and seller controls. */
+.buyer-form input:not([type='file']),
+.buyer-form select {
   height: 52px;
 }
 
-.seller-form select {
+.buyer-form select {
   appearance: none;
   -webkit-appearance: none;
   padding-right: 40px;
