@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import { scrollToElement } from "../scroll";
 import { supabase } from "../supabaseClient";
 import { logEvent } from "../audit";
+import { API_URL } from "../api";
 
 const FLAT_TYPES = ["2 ROOM", "3 ROOM", "4 ROOM", "5 ROOM", "EXECUTIVE"];
 
@@ -28,7 +29,7 @@ function readPhoto(file) {
 }
 
 async function sellerRequest(path, options = {}) {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}${path}`, options);
+  const response = await fetch(`${API_URL}${path}`, options);
   let data;
   try {
     data = await response.json();

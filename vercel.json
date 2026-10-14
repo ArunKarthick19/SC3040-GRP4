@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "be": {
+      "root": "BE",
+      "framework": "fastapi"
+    },
+    "fe": {
+      "root": "FE",
+      "framework": "vite"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": { "service": "be" } },
+    { "source": "/(.*)", "destination": { "service": "fe" } }
+  ]
+}

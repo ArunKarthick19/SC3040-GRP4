@@ -1,6 +1,7 @@
 import { supabase } from './supabaseClient'
 
-const API_URL = import.meta.env.VITE_API_URL
+// Backend address. Unset (e.g. on Vercel, where /api is the backend on the same domain) means this site's own /api.
+export const API_URL = import.meta.env.VITE_API_URL || ''
 
 export async function api(path, options = {}) {
   const { data: { session } } = await supabase.auth.getSession()

@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, CircleMarker, Tooltip, useMap } from 'react-le
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { distance, lineColor } from '../mrtLines';
+import { API_URL } from '../api';
 
 const MARKERS = {
   home: { color: '#ffffff', fillColor: '#e6564c', radius: 10 },
@@ -62,7 +63,7 @@ export default function LocationCheck() {
       const params = new URLSearchParams(
         form.postal.trim() ? { postal: form.postal } : { block: form.block, street: form.street },
       );
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/location?${params}`);
+      const res = await fetch(`${API_URL}/api/location?${params}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail ?? `Server returned ${res.status}`);
       setResult(data);

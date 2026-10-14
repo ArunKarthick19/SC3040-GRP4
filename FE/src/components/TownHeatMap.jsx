@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { ONEMAP_ATTRIBUTION, cbdDistance, distance, lineColor } from '../mrtLines';
 import { blockKey } from '../saves';
+import { API_URL } from '../api';
 
 const COLORS = { good: '#2f9e6b', ok: '#f0b429', bad: '#e6564c', none: '#d9d4d3' };
 
@@ -191,7 +192,7 @@ export default function TownHeatMap({
   useEffect(() => {
     if (view !== 'blocks') return;
     const params = new URLSearchParams({ town: selected, flat_type: activeType });
-    fetch(`${import.meta.env.VITE_API_URL}/api/buyer/town-blocks?${params}`)
+    fetch(`${API_URL}/api/buyer/town-blocks?${params}`)
       .then((res) => res.json())
       .then(setBlocks)
       .catch(() => setError('Could not load blocks for this town.'));

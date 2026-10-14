@@ -1,0 +1,306 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="flatly-code" name="Code interactions">
+    <mxGraphModel dx="1700" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1620" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Flatly: how the code files call each other" style="text;html=1;fontSize=24;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="20" y="5" width="700" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Column A: FE pages and components ===== -->
+        <mxCell id="colA" value="FE/src: pages and components" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;verticalAlign=top;fontStyle=1;arcSize=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="60" width="270" height="780" as="geometry" />
+        </mxCell>
+        <mxCell id="a_app" value="&lt;b&gt;App.jsx&lt;/b&gt;: routes, RequireAuth, session" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="35" y="95" width="240" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a_auth" value="&lt;b&gt;Login · Signup · ForgotPassword&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="35" y="155" width="240" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a_buyer" value="&lt;b&gt;BuyerPage.jsx&lt;/b&gt;&lt;br&gt;form, loans, towns, saved searches" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="35" y="215" width="240" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a_map" value="&lt;b&gt;TownHeatMap.jsx&lt;/b&gt;&lt;br&gt;towns / blocks map, pin and save" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="35" y="285" width="240" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a_saved" value="&lt;b&gt;SavedSearchesModal · SavedPanel&lt;br&gt;SavedFlatsMap&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="35" y="355" width="240" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a_seller" value="&lt;b&gt;SellerPage.jsx&lt;/b&gt;&lt;br&gt;property form, photos, valuation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="35" y="425" width="240" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a_profile" value="&lt;b&gt;ProfilePage.jsx&lt;/b&gt;: name, username, password" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="35" y="495" width="240" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a_nav" value="&lt;b&gt;Navbar.jsx&lt;/b&gt;: profile menu, log out" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="35" y="555" width="240" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a_admin" value="&lt;b&gt;AdminPage.jsx&lt;/b&gt;: audit trail (admin123)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="35" y="615" width="240" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a_other" value="Also: ChooseRole · PasswordInput · Logo · icons" style="text;html=1;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="35" y="670" width="240" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Column B: FE helper modules ===== -->
+        <mxCell id="colB" value="FE/src: helper modules" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;verticalAlign=top;fontStyle=1;arcSize=2;" vertex="1" parent="1">
+          <mxGeometry x="350" y="60" width="240" height="780" as="geometry" />
+        </mxCell>
+        <mxCell id="b_api" value="&lt;b&gt;api.js&lt;/b&gt;: API_URL&lt;br&gt;(empty on Vercel = same-domain /api)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="365" y="215" width="210" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="b_lines" value="&lt;b&gt;mrtLines.js&lt;/b&gt;: line colours,&lt;br&gt;distances, CBD distance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="365" y="285" width="210" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="b_saves" value="&lt;b&gt;saves.js&lt;/b&gt;: saved searches + flats" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="365" y="360" width="210" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="b_audit" value="&lt;b&gt;audit.js&lt;/b&gt;: logEvent, isAdmin,&lt;br&gt;listEvents, countUsers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="365" y="560" width="210" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="b_sb" value="&lt;b&gt;supabaseClient.js&lt;/b&gt;&lt;br&gt;Supabase client (public key)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="365" y="700" width="210" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Column C: BE endpoints ===== -->
+        <mxCell id="colC" value="BE/main.py: endpoints" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=top;fontStyle=1;arcSize=3;" vertex="1" parent="1">
+          <mxGeometry x="660" y="60" width="300" height="440" as="geometry" />
+        </mxCell>
+        <mxCell id="c_rec" value="POST /api/buyer/recommendations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="675" y="100" width="270" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c_blocks" value="GET /api/buyer/town-blocks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="675" y="160" width="270" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c_opts" value="GET /api/seller/options" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="675" y="220" width="270" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c_val" value="POST /api/seller/valuation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="675" y="280" width="270" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c_valp" value="POST /api/seller/valuation-with-photos&lt;br&gt;(login required)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="675" y="340" width="270" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="c_loc" value="GET /api/location (not used by any page)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;dashed=1;fontSize=11;fontFamily=Courier New;fontColor=#777777;" vertex="1" parent="1">
+          <mxGeometry x="675" y="410" width="270" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Supabase ===== -->
+        <mxCell id="sb" value="Supabase" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;verticalAlign=top;fontStyle=1;arcSize=3;" vertex="1" parent="1">
+          <mxGeometry x="660" y="540" width="300" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="sb_auth" value="&lt;b&gt;Auth&lt;/b&gt;: signUp, signInWithPassword,&lt;br&gt;updateUser, signOut" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="675" y="575" width="270" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sb_tables" value="&lt;b&gt;Tables&lt;/b&gt;: profiles · saved_searches&lt;br&gt;bookmarks · audit_log" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=8;fillColor=#ffffff;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="675" y="640" width="270" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="sb_rpc" value="&lt;b&gt;Functions (rpc)&lt;/b&gt;: find_account_email&lt;br&gt;reset_password · is_admin" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="675" y="720" width="270" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sb_note" value="Row Level Security: users only see their own rows; only the admin reads audit_log" style="text;html=1;whiteSpace=wrap;fontSize=10;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="675" y="780" width="270" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Column D: BE modules ===== -->
+        <mxCell id="colD" value="BE: modules" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=top;fontStyle=1;arcSize=3;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="60" width="250" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="d_aff" value="&lt;b&gt;affordability.py&lt;/b&gt;: loans, budget" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1045" y="100" width="220" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="d_rec" value="&lt;b&gt;recommender.py&lt;/b&gt;: towns, blocks,&lt;br&gt;suggest_flat_types" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1045" y="160" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="d_ml" value="&lt;b&gt;price_model.py&lt;/b&gt;: ML predictions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1045" y="230" width="220" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="d_loc" value="&lt;b&gt;location.py&lt;/b&gt;: add_nearest, analyse" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1045" y="290" width="220" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="d_seller" value="&lt;b&gt;seller_valuation.py&lt;/b&gt;: comparables" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1045" y="350" width="220" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="d_gem" value="&lt;b&gt;gemini_valuation.py&lt;/b&gt;: photo condition" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1045" y="410" width="220" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="d_auth" value="&lt;b&gt;auth.py&lt;/b&gt;: get_current_user" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1045" y="470" width="220" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Column E: data and external ===== -->
+        <mxCell id="colE" value="Data files and external APIs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;verticalAlign=top;fontStyle=1;arcSize=3;" vertex="1" parent="1">
+          <mxGeometry x="1340" y="60" width="260" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="e_stats" value="location_stats.json&lt;br&gt;block_coords.json" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=8;fillColor=#ffffff;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1355" y="160" width="230" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="e_model" value="price_model.joblib" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=8;fillColor=#ffffff;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1355" y="225" width="230" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="e_transport" value="transport.json" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=8;fillColor=#ffffff;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1355" y="285" width="230" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="e_comps" value="seller_comparables.json" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=8;fillColor=#ffffff;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1355" y="345" width="230" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="e_gemini" value="&lt;b&gt;Google Gemini API&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1355" y="410" width="230" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="e_onemap" value="&lt;b&gt;OneMap search API&lt;/b&gt; (address lookup)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1355" y="470" width="230" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Legend ===== -->
+        <mxCell id="legend" value="&lt;b&gt;Arrows&lt;/b&gt;&lt;br&gt;green: HTTP call to the backend&lt;br&gt;yellow: Supabase call&lt;br&gt;grey: Python import / file read&lt;br&gt;dashed blue: uses a helper module" style="text;html=1;whiteSpace=wrap;fontSize=11;align=left;verticalAlign=top;strokeColor=#999999;fillColor=#ffffff;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="620" width="250" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- ===== FE -> BE (green) ===== -->
+        <mxCell id="x1" value="fetch" style="endArrow=classic;html=1;strokeColor=#82b366;strokeWidth=2;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.3;entryX=0;entryY=0.5;" edge="1" parent="1" source="a_buyer" target="c_rec">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="x2" value="fetch" style="endArrow=classic;html=1;strokeColor=#82b366;strokeWidth=2;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.3;entryX=0;entryY=0.5;" edge="1" parent="1" source="a_map" target="c_blocks">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="x3" value="" style="endArrow=classic;html=1;strokeColor=#82b366;strokeWidth=2;exitX=1;exitY=0.2;entryX=0;entryY=0.5;" edge="1" parent="1" source="a_seller" target="c_opts">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="x4" value="" style="endArrow=classic;html=1;strokeColor=#82b366;strokeWidth=2;exitX=1;exitY=0.4;entryX=0;entryY=0.5;" edge="1" parent="1" source="a_seller" target="c_val">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="x5" value="with photos +&lt;br&gt;login token" style="endArrow=classic;html=1;strokeColor=#82b366;strokeWidth=2;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.6;entryX=0;entryY=0.5;" edge="1" parent="1" source="a_seller" target="c_valp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== FE helpers (dashed blue) ===== -->
+        <mxCell id="h1" value="" style="endArrow=classic;html=1;strokeColor=#6c8ebf;dashed=1;exitX=1;exitY=0.7;entryX=0;entryY=0.5;" edge="1" parent="1" source="a_buyer" target="b_api">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="h2" value="" style="endArrow=classic;html=1;strokeColor=#6c8ebf;dashed=1;exitX=1;exitY=0.8;entryX=0;entryY=0.5;" edge="1" parent="1" source="a_map" target="b_lines">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="h3" value="" style="endArrow=classic;html=1;strokeColor=#6c8ebf;dashed=1;exitX=1;exitY=0.3;entryX=0;entryY=0.8;" edge="1" parent="1" source="a_saved" target="b_lines">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="h4" value="" style="endArrow=classic;html=1;strokeColor=#6c8ebf;dashed=1;exitX=1;exitY=0.9;entryX=0;entryY=0.3;" edge="1" parent="1" source="a_buyer" target="b_saves">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="h5" value="" style="endArrow=classic;html=1;strokeColor=#6c8ebf;dashed=1;exitX=1;exitY=0.9;entryX=0;entryY=0.5;" edge="1" parent="1" source="a_map" target="b_saves">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="h6" value="log events" style="endArrow=classic;html=1;strokeColor=#6c8ebf;dashed=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.8;entryX=0;entryY=0.2;" edge="1" parent="1" source="a_seller" target="b_audit">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="h7" value="" style="endArrow=classic;html=1;strokeColor=#6c8ebf;dashed=1;exitX=1;exitY=0.5;entryX=0;entryY=0.4;" edge="1" parent="1" source="a_profile" target="b_audit">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="h8" value="" style="endArrow=classic;html=1;strokeColor=#6c8ebf;dashed=1;exitX=1;exitY=0.5;entryX=0;entryY=0.6;" edge="1" parent="1" source="a_nav" target="b_audit">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="h9" value="read log" style="endArrow=classic;html=1;strokeColor=#6c8ebf;dashed=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.8;" edge="1" parent="1" source="a_admin" target="b_audit">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="h10" value="" style="endArrow=classic;html=1;strokeColor=#6c8ebf;dashed=1;edgeStyle=orthogonalEdgeStyle;exitX=1;exitY=0.7;entryX=0;entryY=0.15;" edge="1" parent="1" source="a_auth" target="b_audit">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="320" y="183" /><mxPoint x="320" y="568" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ===== Helpers / pages -> Supabase client and Supabase (yellow) ===== -->
+        <mxCell id="s1" value="" style="endArrow=classic;html=1;strokeColor=#d6b656;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="b_audit" target="b_sb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" value="" style="endArrow=classic;html=1;strokeColor=#d6b656;edgeStyle=orthogonalEdgeStyle;exitX=1;exitY=0.5;entryX=1;entryY=0.3;" edge="1" parent="1" source="b_saves" target="b_sb">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="610" y="380" /><mxPoint x="610" y="715" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s3" value="sign in / up,&lt;br&gt;reset password" style="endArrow=classic;html=1;strokeColor=#d6b656;edgeStyle=orthogonalEdgeStyle;fontSize=10;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="a_auth" target="b_sb">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="12" y="175" /><mxPoint x="12" y="860" /><mxPoint x="340" y="860" /><mxPoint x="340" y="725" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s4" value="" style="endArrow=classic;html=1;strokeColor=#d6b656;exitX=1;exitY=0.8;entryX=0;entryY=0.3;" edge="1" parent="1" source="a_profile" target="b_sb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s5" value="" style="endArrow=classic;html=1;strokeColor=#d6b656;exitX=1;exitY=0.8;entryX=0;entryY=0.2;" edge="1" parent="1" source="a_nav" target="b_sb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s6" value="auth" style="endArrow=classic;html=1;strokeColor=#d6b656;strokeWidth=2;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.2;entryX=0;entryY=0.5;" edge="1" parent="1" source="b_sb" target="sb_auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s7" value="tables" style="endArrow=classic;html=1;strokeColor=#d6b656;strokeWidth=2;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="b_sb" target="sb_tables">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s8" value="rpc" style="endArrow=classic;html=1;strokeColor=#d6b656;strokeWidth=2;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.8;entryX=0;entryY=0.5;" edge="1" parent="1" source="b_sb" target="sb_rpc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Endpoints -> modules (grey) ===== -->
+        <mxCell id="m1" value="" style="endArrow=classic;html=1;strokeColor=#666666;exitX=1;exitY=0.3;entryX=0;entryY=0.5;" edge="1" parent="1" source="c_rec" target="d_aff">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m2" value="" style="endArrow=classic;html=1;strokeColor=#666666;exitX=1;exitY=0.7;entryX=0;entryY=0.3;" edge="1" parent="1" source="c_rec" target="d_rec">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m3" value="" style="endArrow=classic;html=1;strokeColor=#666666;exitX=1;exitY=0.4;entryX=0;entryY=0.7;" edge="1" parent="1" source="c_blocks" target="d_rec">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m4" value="nearest MRT / bus" style="endArrow=classic;html=1;strokeColor=#666666;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.7;entryX=0;entryY=0.3;" edge="1" parent="1" source="c_blocks" target="d_loc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m5" value="" style="endArrow=classic;html=1;strokeColor=#666666;exitX=1;exitY=0.5;entryX=0;entryY=0.2;" edge="1" parent="1" source="c_opts" target="d_seller">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m6" value="" style="endArrow=classic;html=1;strokeColor=#666666;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c_val" target="d_seller">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m7" value="" style="endArrow=classic;html=1;strokeColor=#666666;exitX=1;exitY=0.3;entryX=0;entryY=0.8;" edge="1" parent="1" source="c_valp" target="d_seller">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m8" value="" style="endArrow=classic;html=1;strokeColor=#666666;exitX=1;exitY=0.6;entryX=0;entryY=0.5;" edge="1" parent="1" source="c_valp" target="d_gem">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m9" value="" style="endArrow=classic;html=1;strokeColor=#666666;exitX=1;exitY=0.9;entryX=0;entryY=0.5;" edge="1" parent="1" source="c_valp" target="d_auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m10" value="" style="endArrow=classic;html=1;strokeColor=#999999;dashed=1;exitX=1;exitY=0.5;entryX=0;entryY=0.8;" edge="1" parent="1" source="c_loc" target="d_loc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m11" value="suggest_flat_types" style="endArrow=classic;html=1;strokeColor=#666666;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="d_rec" target="d_ml">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Modules -> data / external ===== -->
+        <mxCell id="f1" value="" style="endArrow=classic;html=1;strokeColor=#666666;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="d_rec" target="e_stats">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f2" value="" style="endArrow=classic;html=1;strokeColor=#666666;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="d_ml" target="e_model">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f3" value="" style="endArrow=classic;html=1;strokeColor=#666666;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="d_loc" target="e_transport">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f4" value="" style="endArrow=classic;html=1;strokeColor=#666666;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="d_seller" target="e_comps">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f5" value="photos + prompt" style="endArrow=classic;html=1;strokeColor=#b85450;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="d_gem" target="e_gemini">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f6" value="analyse() only" style="endArrow=classic;html=1;strokeColor=#b85450;dashed=1;fontSize=10;labelBackgroundColor=#ffffff;edgeStyle=orthogonalEdgeStyle;exitX=0.85;exitY=1;entryX=0;entryY=0.5;" edge="1" parent="1" source="d_loc" target="e_onemap">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="1232" y="340" /><mxPoint x="1310" y="340" /><mxPoint x="1310" y="490" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f7" value="verify token" style="endArrow=classic;html=1;strokeColor=#d6b656;fontSize=10;labelBackgroundColor=#ffffff;edgeStyle=orthogonalEdgeStyle;exitX=0.5;exitY=1;entryX=1;entryY=0.5;" edge="1" parent="1" source="d_auth" target="sb_auth">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="1155" y="600" /><mxPoint x="990" y="600" /><mxPoint x="990" y="600" /></Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

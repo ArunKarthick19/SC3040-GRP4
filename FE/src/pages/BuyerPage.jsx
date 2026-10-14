@@ -7,6 +7,7 @@ import SavedPanel from '../components/SavedPanel';
 import SavedFlatsMap from '../components/SavedFlatsMap';
 import SavedSearchesModal from '../components/SavedSearchesModal';
 import { logEvent } from '../audit';
+import { API_URL } from '../api';
 import {
   blockKey, deleteBookmark, deleteSearch, listBookmarks, listSearches, saveBookmark, saveSearch,
 } from '../saves';
@@ -162,7 +163,7 @@ export default function BuyerPage({ session }) {
     setError('');
     setLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/buyer/recommendations`, {
+      const res = await fetch(`${API_URL}/api/buyer/recommendations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
