@@ -308,7 +308,7 @@ export default function BuyerPage({ session }) {
               </div>
               <div>
                 <label>
-                  Gross monthly household income ($)
+                  Gross monthly household income($)
                   <input type="number" min="1" step="any" value={form.monthly_income} onChange={update('monthly_income')} required />
                 </label>
               </div>
