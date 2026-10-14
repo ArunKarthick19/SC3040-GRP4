@@ -5,6 +5,7 @@ import { scrollToElement } from "../scroll";
 import { supabase } from "../supabaseClient";
 import { logEvent } from "../audit";
 import { API_URL } from "../api";
+import { usePrank } from "../premium";
 
 const FLAT_TYPES = ["2 ROOM", "3 ROOM", "4 ROOM", "5 ROOM", "EXECUTIVE"];
 
@@ -102,6 +103,8 @@ export default function SellerPage({ session }) {
     setPhotos(selected);
   }
 
+  const { guard } = usePrank(); // prank mode can put a fake paywall in front of valuations
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
@@ -164,7 +167,13 @@ export default function SellerPage({ session }) {
           </div>
 
           <div className="buyer-layout">
-            <form className="panel buyer-form seller-form" onSubmit={handleSubmit}>
+            <form
+              className="panel buyer-form seller-form"
+              onSubmit={(e) => {
+                e.preventDefault();
+                guard(() => handleSubmit(e));
+              }}
+            >
               <div>
                 <label>
                   <span>Town <span className="required-mark" aria-hidden="true">*</span></span>

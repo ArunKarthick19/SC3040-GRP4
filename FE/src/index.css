@@ -393,7 +393,7 @@ form button[type='submit'] {
   margin-top: 0;
 }
 
-
+/* ---------- Easter egg: fake paywall and prank toast ---------- */
 
 .paywall {
   max-width: 440px;

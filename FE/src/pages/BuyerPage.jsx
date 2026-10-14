@@ -8,6 +8,7 @@ import SavedFlatsMap from '../components/SavedFlatsMap';
 import SavedSearchesModal from '../components/SavedSearchesModal';
 import { logEvent } from '../audit';
 import { API_URL } from '../api';
+import { usePrank } from '../premium';
 import {
   blockKey, deleteBookmark, deleteSearch, listBookmarks, listSearches, saveBookmark, saveSearch,
 } from '../saves';
@@ -151,6 +152,7 @@ export default function BuyerPage({ session }) {
 
   const savedKeys = useMemo(() => new Set(bookmarks.map(blockKey)), [bookmarks]);
   const resultsRef = useRef(null);
+  const { guard } = usePrank();
 
   // Bring the results into view each time new ones arrive
   useEffect(() => {
@@ -188,7 +190,7 @@ export default function BuyerPage({ session }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    getResults(form);
+    guard(() => getResults(form));
   }
 
   async function handleSaveSearch() {
@@ -376,11 +378,11 @@ export default function BuyerPage({ session }) {
                       {result.town_map && (
                         <div className="panel-actions">
                           {suggestions && (
-                            <button type="button" className="btn-ai" onClick={() => openMap(true)}>
+                            <button type="button" className="btn-ai" onClick={() => guard(() => openMap(true))}>
                               <span aria-hidden="true">✦</span> Suggested flat types
                             </button>
                           )}
-                          <button type="button" className="btn-outline" onClick={() => openMap(false)}>
+                          <button type="button" className="btn-outline" onClick={() => guard(() => openMap(false))}>
                             View map
                           </button>
                         </div>
